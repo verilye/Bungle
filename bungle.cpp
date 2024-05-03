@@ -15,6 +15,10 @@ int main(int argc, char* argv[]) {
 		bungle->runPrompt();
 	}
 
+	// Return error code 65 on bad input file error
+	if (bungle->hadError) {
+		return 65;
+	}
 
 	return 0;
 }
@@ -54,6 +58,7 @@ void Bungle::runPrompt() {
 			break;
 		}
 		run(line);
+		hadError = false;
 	}
 }
 
@@ -90,6 +95,9 @@ void Bungle::run(std::string source) {
 	for (unsigned int i = 0; i < vec.size(); i++) {
 		std::cout << vec[i] << std::endl;
 	}
+
+	Token* token = new Token(LEFT_PAREN, "jingle", "jangle", 1);
+	token->printToken();
 
 }
 
