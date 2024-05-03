@@ -1,27 +1,25 @@
 #include "bungle.h"
 
-
-static void error(int line, std::string message);
-static void report(int line, std::string where, std::string message);
-
 int main(int argc, char* argv[]) {
+
+	Bungle* bungle = new Bungle();
 
 	if (argc > 2) {
 		std::cout << "(Usage: bungle [script])\n";
 		return 64;
 	}
 	else if (argc == 2) {
-		runFile(argv[1]);
+		bungle->runFile(argv[1]);
 	}
 	else {
-		runPrompt();
+		bungle->runPrompt();
 	}
 
 
 	return 0;
 }
 
-static void runFile(std::string path) {
+void Bungle::runFile(std::string path) {
 	
 	// Read all code from file and feed it into the run function
 	// Open the file in binary mode
@@ -44,7 +42,7 @@ static void runFile(std::string path) {
 
 }
 
-static void runPrompt() {
+void Bungle::runPrompt() {
 
 	// run code one line at a time like live python code
 	std::string line = "";
@@ -59,7 +57,7 @@ static void runPrompt() {
 	}
 }
 
-static void run(std::string source) {
+void Bungle::run(std::string source) {
 
 	// Break string into tokens and print them out on new lines every time
 	// Create a java-list like structure and store the string in it using spaces as the delimiter ()
@@ -95,12 +93,12 @@ static void run(std::string source) {
 
 }
 
-static void error(int line, std::string message) {
+void Bungle::error(int line, std::string message) {
 	report(line, "", message);
 }
 
-static void report(int line, std::string where, std::string message) {
+void Bungle::report(int line, std::string where, std::string message) {
 	std::cout << "\033[1;31m [line "<< line<<"] Error"<<where<<": "<< message<< "\033[0m" << std::endl;
-
+	hadError = true;
 }
 
