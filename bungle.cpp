@@ -69,44 +69,36 @@ void Bungle::run(std::string source) {
 	// Im going to use a vector here, a cursory look online makes it seem like vectors are better for traversing
 	// and linked lists are better for insertion only
 
-	std::vector<std::string> vec;
-	if (!source.empty()) {
-		int start = 0;
 
-		do {
-			// Find the delimiter
-			int index = source.find(" ", start);
-			if (index == std::string::npos) {
-				break;
-			}
+	// TEST CODE TO VISUALISE TOKENS
+	//std::vector<std::string> vec;
+	//if (!source.empty()) {
+	//	int start = 0;
 
-			// If found, add the substring to the vector
+	//	do {
+	//		// Find the delimiter
+	//		int index = source.find(" ", start);
+	//		if (index == std::string::npos) {
+	//			break;
+	//		}
 
-			int length = index - start;
-			vec.push_back(source.substr(start, length));
-			start += (length + 1);
+	//		// If found, add the substring to the vector
 
-		} while (true);
+	//		int length = index - start;
+	//		vec.push_back(source.substr(start, length));
+	//		start += (length + 1);
 
-		vec.push_back(source.substr(start,source.back()));
+	//	} while (true);
+
+	//	vec.push_back(source.substr(start,source.back()));
+	//}
+
+	Scanner* scanner = new Scanner(source);
+	std::vector<Token*> newVec = scanner->scanTokens();
+
+	// Print tokens out using Token printer in Token class
+	for (unsigned int i = 0; i <newVec.size(); i++) {
+		newVec[i]->printToken();
 	}
 
-	// For now, print out all tokens on new line
-	for (unsigned int i = 0; i < vec.size(); i++) {
-		std::cout << vec[i] << std::endl;
-	}
-
-	Token* token = new Token(LEFT_PAREN, "jingle", "jangle", 1);
-	token->printToken();
-
 }
-
-void Bungle::error(int line, std::string message) {
-	report(line, "", message);
-}
-
-void Bungle::report(int line, std::string where, std::string message) {
-	std::cout << "\033[1;31m [line "<< line<<"] Error"<<where<<": "<< message<< "\033[0m" << std::endl;
-	hadError = true;
-}
-
