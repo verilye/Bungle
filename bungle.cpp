@@ -15,8 +15,8 @@ int main(int argc, char* argv[]) {
 		bungle->runPrompt();
 	}
 
-	// Return error code 65 on bad input file error
-	if (bungle->hadError) {
+	// check error reporting system for error flag
+	if (hadError) {
 		return 65;
 	}
 
@@ -100,5 +100,4 @@ void Bungle::run(std::string source) {
 	for (unsigned int i = 0; i <newVec.size(); i++) {
 		newVec[i]->printToken();
 	}
-
 }

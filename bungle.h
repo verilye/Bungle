@@ -11,15 +11,12 @@
 class Bungle {
 	
 public:
-	static bool hadError;
 	static void runFile(std::string path);
 	static void runPrompt();
-	
 private:
 	
 	static void run(std::string source);
 };
 
-bool Bungle::hadError = false;
 
 #endif

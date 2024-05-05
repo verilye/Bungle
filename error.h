@@ -1,13 +1,12 @@
 #ifndef ERROR_H
-#def ERROR_H
+#define ERROR_H
 
-void error(int line, std::string message) {
-	report(line, "", message);
-}
+#include <string>
+#include <iostream>
 
-void report(int line, std::string where, std::string message) {
-	std::cout << "\033[1;31m [line " << line << "] Error" << where << ": " << message << "\033[0m" << std::endl;
-	hadError = true;
-}
+extern bool hadError;
+
+void report(int line, std::string where, std::string message);
+void error(int line, std::string message);
 
 #endif

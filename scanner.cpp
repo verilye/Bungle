@@ -1,6 +1,5 @@
 #include "scanner.h"
 
-
 char Scanner::advance() {
 	current++;
 	return source[current - 1];
