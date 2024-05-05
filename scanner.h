@@ -6,8 +6,6 @@
 #include "token.h"
 #include "error.h"
 
-class Bungle;
-
 class Scanner {
 
 public:
@@ -31,7 +29,7 @@ private:
 	void scanToken();
 	char advance();
 	void addToken(TokenType type);
-	void addToken(TokenType type, std::string strliteral);
+	void addToken(TokenType type, char* strliteral);
 
 	// Declare Bunge::error as a friend function
 	//friend void Bungle::error(int line, std::string message);

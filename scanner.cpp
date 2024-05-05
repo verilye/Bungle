@@ -9,8 +9,8 @@ void Scanner::addToken(TokenType type) {
 	addToken(type, NULL);
 }
 
-void Scanner::addToken(TokenType type, std::string strliteral) {
-	std::string text = source.substr(start, current);
+void Scanner::addToken(TokenType type, char* strliteral) {
+	std::string text = source.substr(start,(current-start));
 	Token* token = new Token(type, text, strliteral, line);
 	tokens.push_back(token);
 }
@@ -29,7 +29,8 @@ void Scanner::scanToken() {
 		case ';': addToken(SEMICOLON); break;
 		case '*': addToken(STAR); break;
 		default:
-			error(line, "Unexpected character.");
+			std::string err = "Unexpected character - ";
+			error(line, err+=c);
 			break;
 	}
 }
@@ -46,7 +47,7 @@ std::vector<Token*> Scanner::scanTokens() {
 		scanToken();
 
 	}
-	tokens.push_back((new Token(ENDOFILE, "", "", line)));
+	tokens.push_back((new Token(ENDOFILE, "", NULL, line)));
 	return tokens;
 
 }
