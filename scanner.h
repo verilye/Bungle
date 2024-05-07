@@ -25,14 +25,15 @@ private:
 	// Tracks line that the lexeme is on so we can track its location (for errors etc)
 	int line = 1;
 	
+	
 	bool isAtEnd();
+	char peek();
 	void scanToken();
 	char advance();
+	void string();
 	void addToken(TokenType type);
 	void addToken(TokenType type, char* strliteral);
 
-	// Declare Bunge::error as a friend function
-	//friend void Bungle::error(int line, std::string message);
 
 };
 

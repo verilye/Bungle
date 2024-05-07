@@ -28,6 +28,25 @@ void Scanner::scanToken() {
 		case '+': addToken(PLUS); break;
 		case ';': addToken(SEMICOLON); break;
 		case '*': addToken(STAR); break;
+		case '/':
+			if (match('/')) {
+				// A comment goes until the end of the line
+				while (peek() != '\n' && !isAtEnd()) advance();
+			}
+			else {
+				addToken(SLASH);
+			}
+			break;
+		case ' ':
+		case '\r':
+		case '\t':
+			//Ignore whitespace
+		case '\n';
+			line++;
+			break;
+		case '"': string(); break;
+
+
 		default:
 			std::string err = "Unexpected character - ";
 			error(line, err+=c);
@@ -35,8 +54,33 @@ void Scanner::scanToken() {
 	}
 }
 
+void Scanner::string() {
+	while (peek() != '"' && !isAtEnd()) {
+		if (peek() == '\n') line++;
+		advance();
+	}
+
+	if (isAtEnd()) {
+		error(line, "Unterminated string.");
+		return;
+	}
+
+	// The closing "
+	advance();
+
+	std::string value = source.substr(start+1, ((current - start)-1));
+	addToken(STRING, value);
+}
+
 bool Scanner::isAtEnd() {
 	return current >= source.size();
+}
+
+// lookahead function. Check the character ahead of it without 'consuming' it
+// important concept within interpreters
+char Scanner::peek() {
+	if (isAtEnd()) return '\0';
+	return source[current];
 }
 
 std::vector<Token*> Scanner::scanTokens() {
