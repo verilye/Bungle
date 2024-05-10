@@ -33,8 +33,12 @@ private:
 	void string();
 	void addToken(TokenType type);
 	void addToken(TokenType type, char* strliteral);
-
-
+	bool isDigit(char c);
+	void number();
+	char peekNext();
+	void identifier();
+	bool isAlpha(char c);
+	bool isAlphaNumeric(char c);
 };
 
 #endif

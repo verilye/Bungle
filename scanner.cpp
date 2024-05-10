@@ -46,10 +46,27 @@ void Scanner::scanToken() {
 			break;
 		case '"': string(); break;
 
+			// Conside the concept of maximal munch
+			// The case which matches the most characters wins
+			// when 2 lexical grammar rules match a chunk
+		case 'o':
+			if (peek() == 'r') {
+				addToken(OR);
+			}
+			break;
 
 		default:
-			std::string err = "Unexpected character - ";
-			error(line, err+=c);
+
+			if (isDigit(c)) {
+				number();
+			}
+			else if (isAlpha(c)) {
+				identifier();
+			}
+			else {
+				std::string err = "Unexpected character - ";
+				error(line, err += c);
+			}
 			break;
 	}
 }
@@ -94,4 +111,47 @@ std::vector<Token*> Scanner::scanTokens() {
 	tokens.push_back((new Token(ENDOFILE, "", NULL, line)));
 	return tokens;
 
+}
+
+bool Scanner::isDigit(char c) {
+	return c >= '0' && c <= '9';
+}
+
+void Scanner::number() {
+	while (isDigit(peek())) advance();
+
+	//Look for a fractional part;
+	if (peek() == '.' && isDigit(peekNext())) {
+		// Consume the .
+		advance();
+
+		while (isDigit()) advance();
+	}
+
+
+	// Double.parseDouble() Java method in the example
+	addToken(NUMBER, )
+}
+
+
+// Convert chars to the proper datatype
+char Scanner::peekNext() {
+	if (current + 1 >= source.length()) return '\0';
+	return source.charAt(current + 1);
+}
+
+void Scanner::identifier() {
+	while (isAlphaNumeric(peek())) advance();
+
+	addToken(IDENTIFIER);
+}
+
+bool Scanner::isAlpha(char c) {
+	return (c >= 'a', && c <= 'z') ||
+		(c >= 'A' && c <= 'Z') ||
+		c == '_';
+}
+
+bool Scanner::isAlphaNumeric(char c) {
+	return isAlpha(c) || isDigit(c);
 }
