@@ -143,7 +143,11 @@ char Scanner::peekNext() {
 void Scanner::identifier() {
 	while (isAlphaNumeric(peek())) advance();
 
-	addToken(IDENTIFIER);
+	std::string text = source.substr(start, ((current - start)));
+	TokenType type = keywords.get(text);
+	if(type == NULL) type == IDENTIFIER;
+	addToken(type);
+
 }
 
 bool Scanner::isAlpha(char c) {

@@ -5,6 +5,7 @@
 #include <vector>
 #include "token.h"
 #include "error.h"
+#include <map>
 
 class Scanner {
 
@@ -12,6 +13,7 @@ public:
 	
 	Scanner(std::string source) : source(source) {};
 	std::vector<Token*> scanTokens();
+
 
 
 private:
@@ -39,6 +41,27 @@ private:
 	void identifier();
 	bool isAlpha(char c);
 	bool isAlphaNumeric(char c);
+
+	std::map<string, TokenType> keywords;
+
+	keywords ={
+		{"and", AND},
+		{ "class", CLASS},
+	{ "else", ELSE},
+	{ "false", FALSE },
+	{ "for", FOR },
+	{ "fun", FUN },
+	{ "if", IF },
+	{ "nil", NIL },
+	{ "or", OR },
+	{ "print", PRINT },
+	{ "return", RETURN },
+	{ "super", SUPER },
+	{ "this", THIS },
+	{ "true", TRUE },
+	{ "var", VAR },
+	{ "while", WHILE },
+	}
 };
 
 #endif
