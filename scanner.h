@@ -6,6 +6,7 @@
 #include "token.h"
 #include "error.h"
 #include <map>
+#include <bits/stdc++.h>
 
 class Scanner {
 
@@ -13,8 +14,6 @@ public:
 	
 	Scanner(std::string source) : source(source) {};
 	std::vector<Token*> scanTokens();
-
-
 
 private:
 	const std::string source;
@@ -34,34 +33,33 @@ private:
 	char advance();
 	void string();
 	void addToken(TokenType type);
-	void addToken(TokenType type, char* strliteral);
+	void addToken(TokenType type, std::string strliteral);
 	bool isDigit(char c);
 	void number();
 	char peekNext();
 	void identifier();
 	bool isAlpha(char c);
 	bool isAlphaNumeric(char c);
+	bool match(char expected);
 
-	std::map<string, TokenType> keywords;
-
-	keywords ={
+	std::map<std::string, TokenType> keywords = {
 		{"and", AND},
 		{ "class", CLASS},
-	{ "else", ELSE},
-	{ "false", FALSE },
-	{ "for", FOR },
-	{ "fun", FUN },
-	{ "if", IF },
-	{ "nil", NIL },
-	{ "or", OR },
-	{ "print", PRINT },
-	{ "return", RETURN },
-	{ "super", SUPER },
-	{ "this", THIS },
-	{ "true", TRUE },
-	{ "var", VAR },
-	{ "while", WHILE },
-	}
+		{ "else", ELSE},
+		{ "false", FALSE },
+		{ "for", FOR },
+		{ "fun", FUN },
+		{ "if", IF },
+		{ "nil", NIL },
+		{ "or", OR },
+		{ "print", PRINT },
+		{ "return", RETURN },
+		{ "super", SUPER },
+		{ "this", THIS },
+		{ "true", TRUE },
+		{ "var", VAR },
+		{ "while", WHILE },
+	};
 };
 
 #endif

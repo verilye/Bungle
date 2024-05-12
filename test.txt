@@ -1,1 +1,16 @@
-;/( {+m
+;
+/
+(
+{
++
+m
+for
+nil
+fun
+or print
+1232123
+123.122
+"bazinga"
+r
+t
+<=

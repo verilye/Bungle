@@ -1,14 +1,13 @@
 #include "token.h"
 
 void Token::printToken() {
-	std::cout<< type <<std::endl;
-	std::cout << lexeme << std::endl;
-	if (strliteral == NULL) {
-		std::cout << "NULL" << std::endl;
-	}
-	else {
-		std::cout << strliteral << std::endl;
-	}
-	std::cout << line << std::endl;
+	std::cout << "  Type:";
+	std::cout << type;
+	std::cout << "  Lexeme:";
+	std::cout << lexeme;
+	std::cout << "  Literal:";
+	std::cout << strliteral;
+	std::cout << "  Line:";
+	std::cout << line;
 	std::cout<<std::endl;
 }

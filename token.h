@@ -32,10 +32,10 @@ class Token {
 public:
 	const TokenType type;
 	const std::string lexeme;
-	const char* strliteral;
+	const std::string strliteral;
 	const int line;
 
-	Token(TokenType type, std::string lexeme, char* strliteral, int line)
+	Token(TokenType type, std::string lexeme, std::string strliteral, int line)
 		:type(type), lexeme(lexeme), strliteral(strliteral), line(line){}
 
 	void printToken();
