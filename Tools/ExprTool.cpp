@@ -2,32 +2,47 @@
 #include <list>
 #include <string>
 #include <fstream>
+#include <sstream>
+#include <vector>
 
 
 // generating code for all different permutations of the Expr class
 // Because Im generating boilerplate, maybe dont bother seperating shit into 
 // headers? Or only generate headers?
 
-void defineTypes(ofstream MyFile, std::string className, std::string fieldList) {
+void defineType(std::ofstream & MyFile, std::string className, std::string fieldList) {
 
-	MyFile << "  class " + className + ": public " + baseName + " {\n";
+	MyFile << "  class " + className + ": public " + className + " {\n";
 
 	// Constructor
 
 	MyFile << "   " + className + "(" + fieldList + ")\n";
 
-	// Store parameters in fields.
-	std::string* fields[] = fieldsList.split(", ");
+	// Parse string through the stream and seperate by delimiter
+	std::istringstream stream(fieldList);
+	std::string token; 
+	vector<std::string> fields;
+
+	while (getline(stream, token, ", ")) {
+		fields.pushback(token);
+	}
+	// iterate through vector and print the fields out so its C++ code. 
+	// using an iterator here to be a fancy lad
+
+	vector<std::string>::iterator iter = fields.begin();
+
 	MyFile << "\n:";
-	for (std::string field : fields) {
-		std::string name = field.split(" ")[1];
-		MyFile << name << "(" << name << "),";
+	for (iter; iter<fields.size(); iter++) {
+		// Put the field names in the constructor after the parameter list
+		// in c++ convention
+		MyFile << *iter << "(" << *iter << "),";
 	}
 	MyFile << "{}\n";
 
-	// Fields
-	for (std::string field::fields) {
-		MyFile << "    const " + field + ";\n";
+	iter = fields.begin();
+	// Declaring fields outside the constructor
+	for (iter; iter < fields.size(); iter++) {
+		MyFile << "    const " + *iter + ";\n";
 	}
 
 	MyFile << "}";
@@ -35,9 +50,9 @@ void defineTypes(ofstream MyFile, std::string className, std::string fieldList) 
 
 
 void defineAst( std::string outputDir, std::string baseName, List<std::string> types) {
-	std::string path = outputDir + "/" + baseName + ".java";
+	std::string path = outputDir + "/" + baseName + ".cpp";
 	// write to file
-	ofstream MyFile(path);
+	std::ofstream MyFile(path);
 	// include the header
 	MyFile << "#include \"Expr.h\" \n";
 	MyFile << "#include <list> \n";
@@ -45,12 +60,21 @@ void defineAst( std::string outputDir, std::string baseName, List<std::string> t
 
 	// The AST classes.
 
-	for (std::string type : types) {
+	std::istringstream stream(fieldList);
+	std::string token;
+	vector<std::string> fields;
 
-		// TODO - replace trim with C++ appropriate terms
-		std::string className = type.split(":")[0].trim();
-		std::string fields = type.split(":")[1].trim();
-		definteType(MyFile, baseName, className, fields);
+	while (getline(stream, token, ", ")) {
+		fields.pushback(token);
+	}
+
+	vector<std::string>::iterator iter = fields.begin();
+	for (iter; iter < fields.size(); iter++) {
+
+		//TODO rejig this, its still half java bullshit
+		std::string className = *iter[0];
+		std::string fields = *iter[1];
+		defineType(MyFile, baseName, className, fields);
 	}
 	
 	MyFile << "}";
@@ -65,7 +89,7 @@ int main(int argc, char * argv[]) {
 		return 64;
 	}
 
-	std::string outputDir = args[0];
+	std::string outputDir = argv[0];
 	defineAst(outputDir, "Expr", Arrays.asList(
 		"Binary : Expr left, Token operatorToken, Expr right",
 		"Grouping : Expr expression",
