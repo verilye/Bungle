@@ -5,79 +5,101 @@
 #include <sstream>
 #include <vector>
 
-
 // generating code for all different permutations of the Expr class
 // Because Im generating boilerplate, maybe dont bother seperating shit into 
 // headers? Or only generate headers?
 
-void defineType(std::ofstream & MyFile, std::string className, std::string fieldList) {
+void defineType(std::ofstream & MyFile, std::string baseName, std::string className, std::string fieldList) {
 
-	MyFile << "  class " + className + ": public " + className + " {\n";
-
-	// Constructor
-
-	MyFile << "   " + className + "(" + fieldList + ")\n";
+	MyFile << "  class " + className + ": public " + baseName + " {\n";
 
 	// Parse string through the stream and seperate by delimiter
 	std::istringstream stream(fieldList);
-	std::string token; 
-	vector<std::string> fields;
+	std::string token;
+	std::vector<std::string> fields;
 
-	while (getline(stream, token, ", ")) {
-		fields.pushback(token);
+	while (std::getline(stream, token, ','))
+	{
+		fields.push_back(token);
 	}
+
+	// Declaring fields outside the constructor
+	for (const std::string& token : fields) {
+		std::istringstream stream(token);
+		std::string variableName;
+		std::getline(stream, variableName);
+		MyFile << "    const " + token + ";\n";		  
+	}
+
+	// Constructor
+	MyFile << "   " + className + "(" + fieldList + ")\n";
+
+	
 	// iterate through vector and print the fields out so its C++ code. 
 	// using an iterator here to be a fancy lad
 
-	vector<std::string>::iterator iter = fields.begin();
-
 	MyFile << "\n:";
-	for (iter; iter<fields.size(); iter++) {
+
 		// Put the field names in the constructor after the parameter list
 		// in c++ convention
-		MyFile << *iter << "(" << *iter << "),";
+		// Trim each token so that the variable type is not included in the declaration
+
+	for (const std::string& token : fields) {
+		std::istringstream stream(token);
+		std::string variableName;
+		std::getline(stream, variableName, ' ');
+		std::getline(stream, variableName, ' ');
+		std::getline(stream, variableName);
+
+		MyFile << variableName << "(" << variableName << "),";
 	}
 	MyFile << "{}\n";
 
-	iter = fields.begin();
-	// Declaring fields outside the constructor
-	for (iter; iter < fields.size(); iter++) {
-		MyFile << "    const " + *iter + ";\n";
-	}
+	MyFile << "};\n";
 
-	MyFile << "}";
 }
 
-
-void defineAst( std::string outputDir, std::string baseName, List<std::string> types) {
-	std::string path = outputDir + "/" + baseName + ".cpp";
+void defineAst(std::string outputDir, std::string baseName, std::list<std::string> types) {
+	
+	std::string path = outputDir + "/" + baseName + ".h";
 	// write to file
 	std::ofstream MyFile(path);
+	if (!MyFile.is_open()) {
+		std::cerr << "Failed to open file" << path << std::endl;
+		return;
+	}
+
+	MyFile << "#ifndef EXPRGEN_H\n";
+	MyFile << "#define EXPRGEN_H\n";
+
 	// include the header
 	MyFile << "#include \"Expr.h\" \n";
+	MyFile << "#include \"Token.h\" \n";
 	MyFile << "#include <list> \n";
-	MyFile << "\n class " + baseName + " {\n";
+	
+	//MyFile << "\n class " + baseName + " {\n";
 
-	// The AST classes.
+	// Go through each list item and read className and types into seperate variables
+	// className is added onto the baseName which indicates it was generated code
+	// Send fields through to be printed out in the defineTypes function
 
-	std::istringstream stream(fieldList);
-	std::string token;
-	vector<std::string> fields;
+	for(const std::string &type : types){
 
-	while (getline(stream, token, ", ")) {
-		fields.pushback(token);
-	}
+		std::istringstream stream(type);
+		std::string className;
+		std::getline(stream, className, ':');
+		std::string fields;
+		std::getline(stream, fields);
 
-	vector<std::string>::iterator iter = fields.begin();
-	for (iter; iter < fields.size(); iter++) {
+		fields.erase(0, fields.find_first_not_of(' '));
+		fields.erase(fields.find_last_not_of(' ') + 1);
 
-		//TODO rejig this, its still half java bullshit
-		std::string className = *iter[0];
-		std::string fields = *iter[1];
-		defineType(MyFile, baseName, className, fields);
+		defineType(MyFile,baseName, className, fields);
 	}
 	
-	MyFile << "}";
+	//MyFile << "}; \n";
+
+	MyFile << "#endif";
 	MyFile.close();
 
 }
@@ -89,12 +111,14 @@ int main(int argc, char * argv[]) {
 		return 64;
 	}
 
-	std::string outputDir = argv[0];
-	defineAst(outputDir, "Expr", Arrays.asList(
+	std::list<std::string> astTypes{
 		"Binary : Expr left, Token operatorToken, Expr right",
 		"Grouping : Expr expression",
-		"Literal : Object value",
+		"Literal : strliteral value",
 		"Unary : Token operatorToken, Expr right"
-	));
+	};
+
+	std::string outputDir = argv[1];
+	defineAst(outputDir, "ExprGen", astTypes);
 
 }
