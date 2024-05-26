@@ -11,7 +11,7 @@
 
 void defineType(std::ofstream & MyFile, std::string baseName, std::string className, std::string fieldList) {
 
-	MyFile << "  class " + className + ": public " + baseName + " {\n";
+	MyFile << "  class " + className + ": public Expr {\n";
 
 	// Parse string through the stream and seperate by delimiter
 	std::istringstream stream(fieldList);
@@ -59,6 +59,20 @@ void defineType(std::ofstream & MyFile, std::string baseName, std::string classN
 
 }
 
+void defineVisitor(std::ofstream& MyFile, std::string baseName, std::list<std::string> types) {
+	
+	// In the example this only generates a single 'interface' which will be inherited from in
+	// the defineAstfunction
+
+	// REMEMBER - in C++, interface and abstract types do not exist like in C#
+	// An abstract class is something that can be instatiated and inherited from
+	// An interface would be something that has a pure virtual function in it
+	//		so something that needs to be inherited from and filled out before it
+	//		can be instantiated
+
+	MyFile << "\n";
+}
+
 void defineAst(std::string outputDir, std::string baseName, std::list<std::string> types) {
 	
 	std::string path = outputDir + "/" + baseName + ".h";
@@ -76,28 +90,43 @@ void defineAst(std::string outputDir, std::string baseName, std::list<std::strin
 	MyFile << "#include \"Expr.h\" \n";
 	MyFile << "#include \"Token.h\" \n";
 	MyFile << "#include <list> \n";
-	
-	//MyFile << "\n class " + baseName + " {\n";
 
+
+	// Each kind of expression needs to act differently at runtime, but using a 
+	// massive switch statement is bad for performance so we need to use a 
+	// design pattern to handle it, the visitor pattern is suggested.
+
+	// Adds a functional style paradigm to an object oriented language
+	// as explained in Crafting Interpreters page 69.
+
+	// Define visitor base class
+	MyFile << "class ExprVisitor { \n";
+	
+	// in the example its basically an abstract java class with an interface inside
+	defineVisitor(MyFile, baseName, types);
+
+
+	MyFile << "}\n";
 	// Go through each list item and read className and types into seperate variables
 	// className is added onto the baseName which indicates it was generated code
 	// Send fields through to be printed out in the defineTypes function
 
-	for(const std::string &type : types){
+	for(const std::string &type : types){ 
 
-		std::istringstream stream(type);
-		std::string className;
-		std::getline(stream, className, ':');
-		std::string fields;
-		std::getline(stream, fields);
+		std::istringstream stream(type); 
+		std::string className; 
+		std::getline(stream, className, ':'); 
+		std::string fields; 
+		std::getline(stream, fields); 
 
-		fields.erase(0, fields.find_first_not_of(' '));
-		fields.erase(fields.find_last_not_of(' ') + 1);
+		fields.erase(0, fields.find_first_not_of(' ')); 
+		fields.erase(fields.find_last_not_of(' ') + 1); 
 
 		defineType(MyFile,baseName, className, fields);
+		// define accept functions in each of the subclasses to be visited by the visitor class
 	}
 	
-	//MyFile << "}; \n";
+
 
 	MyFile << "#endif";
 	MyFile.close();
