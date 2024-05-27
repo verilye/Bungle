@@ -10,8 +10,10 @@
 // headers? Or only generate headers?
 
 void defineType(std::ofstream & MyFile, std::string baseName, std::string className, std::string fieldList) {
-
-	MyFile << "  class " + className + ": public Expr {\n";
+	
+	
+	MyFile << "template <typename T>\n";
+	MyFile << "class " + className + ": public Expr {\n";
 
 	// Parse string through the stream and seperate by delimiter
 	std::istringstream stream(fieldList);
@@ -28,21 +30,20 @@ void defineType(std::ofstream & MyFile, std::string baseName, std::string classN
 		std::istringstream stream(token);
 		std::string variableName;
 		std::getline(stream, variableName);
-		MyFile << "    const " + token + ";\n";		  
+		MyFile << "	const " + token + ";\n";		  
 	}
 
 	// Constructor
-	MyFile << "   " + className + "(" + fieldList + ")\n";
+	MyFile << "	" + className + "(" + fieldList + ")\n";
 
 	
 	// iterate through vector and print the fields out so its C++ code. 
 	// using an iterator here to be a fancy lad
+	MyFile << "		:";
 
-	MyFile << "\n:";
-
-		// Put the field names in the constructor after the parameter list
-		// in c++ convention
-		// Trim each token so that the variable type is not included in the declaration
+	// Put the field names in the constructor after the parameter list
+	// in c++ convention
+	// Trim each token so that the variable type is not included in the declaration
 
 	for (const std::string& token : fields) {
 		std::istringstream stream(token);
@@ -53,14 +54,21 @@ void defineType(std::ofstream & MyFile, std::string baseName, std::string classN
 
 		MyFile << variableName << "(" << variableName << "),";
 	}
-	MyFile << "{}\n";
+	MyFile << "{}\n\n";
 
-	MyFile << "};\n";
+	MyFile << "	virtual T accept(ExprVisitor<T> visitor) override {\n";
+	MyFile << "		return visitor.visit(*this);\n";
+	MyFile << "	};\n";
+
+	MyFile << "};\n\n";
 
 }
 
 void defineVisitor(std::ofstream& MyFile, std::string baseName, std::list<std::string> types) {
-	
+
+	// Define visitor base class
+	MyFile << "class ExprVisitor { \n";
+
 	// In the example this only generates a single 'interface' which will be inherited from in
 	// the defineAstfunction
 
@@ -70,7 +78,17 @@ void defineVisitor(std::ofstream& MyFile, std::string baseName, std::list<std::s
 	//		so something that needs to be inherited from and filled out before it
 	//		can be instantiated
 
-	MyFile << "\n";
+	// Create methods to 'visit' all of the generated classes 
+	for (const std::string& type : types) {
+		std::istringstream stream(type);
+		std::string typeName;
+		std::getline(stream, typeName, ' ');
+		MyFile << "	virtual T visit"+ typeName + baseName + "("+ typeName + " ";
+		MyFile << "expression);\n";
+	}
+
+	MyFile << "};\n\n";
+	
 }
 
 void defineAst(std::string outputDir, std::string baseName, std::list<std::string> types) {
@@ -91,22 +109,20 @@ void defineAst(std::string outputDir, std::string baseName, std::list<std::strin
 	MyFile << "#include \"Token.h\" \n";
 	MyFile << "#include <list> \n";
 
+	// Add templates for implementation of inheritance and abstraction
+
+	MyFile << "template <typename T>\n";
 
 	// Each kind of expression needs to act differently at runtime, but using a 
 	// massive switch statement is bad for performance so we need to use a 
 	// design pattern to handle it, the visitor pattern is suggested.
 
 	// Adds a functional style paradigm to an object oriented language
-	// as explained in Crafting Interpreters page 69.
+	// using the visitor pattern. Interface which has different functionality 
+	// when called for each type
 
-	// Define visitor base class
-	MyFile << "class ExprVisitor { \n";
-	
-	// in the example its basically an abstract java class with an interface inside
 	defineVisitor(MyFile, baseName, types);
 
-
-	MyFile << "}\n";
 	// Go through each list item and read className and types into seperate variables
 	// className is added onto the baseName which indicates it was generated code
 	// Send fields through to be printed out in the defineTypes function
@@ -122,12 +138,11 @@ void defineAst(std::string outputDir, std::string baseName, std::list<std::strin
 		fields.erase(0, fields.find_first_not_of(' ')); 
 		fields.erase(fields.find_last_not_of(' ') + 1); 
 
-		defineType(MyFile,baseName, className, fields);
+		defineType(MyFile, baseName, className, fields);
 		// define accept functions in each of the subclasses to be visited by the visitor class
+
 	}
 	
-
-
 	MyFile << "#endif";
 	MyFile.close();
 
