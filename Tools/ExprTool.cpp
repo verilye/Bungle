@@ -13,7 +13,7 @@ void defineType(std::ofstream & MyFile, std::string baseName, std::string classN
 	
 	
 	MyFile << "template <typename T>\n";
-	MyFile << "class " + className + ": public Expr {\n";
+	MyFile << "class " + className + ": public Expr<T> {\n";
 
 	// Parse string through the stream and seperate by delimiter
 	std::istringstream stream(fieldList);
@@ -25,12 +25,18 @@ void defineType(std::ofstream & MyFile, std::string baseName, std::string classN
 		fields.push_back(token);
 	}
 
+	// NOTE -- Why are we redeclaring fields in a subclass declaration
+	// C++ does not have virtual variables, only functions
+
+	// It seems that variables should be declared in each of the subclasses instead
+	// of the super class, this could be wrong but Im going to go with that for now
+
 	// Declaring fields outside the constructor
 	for (const std::string& token : fields) {
 		std::istringstream stream(token);
 		std::string variableName;
 		std::getline(stream, variableName);
-		MyFile << "	const " + token + ";\n";		  
+		MyFile << "	" + token + ";\n";		  
 	}
 
 	// Constructor
@@ -50,9 +56,14 @@ void defineType(std::ofstream & MyFile, std::string baseName, std::string classN
 		std::string variableName;
 		std::getline(stream, variableName, ' ');
 		std::getline(stream, variableName, ' ');
+		std::getline(stream, variableName, ' ');
 		std::getline(stream, variableName);
 
-		MyFile << variableName << "(" << variableName << "),";
+		MyFile << variableName << "(" << variableName << ")";
+
+		if (token != fields.back()) {
+			MyFile << ",";
+		}
 	}
 	MyFile << "{}\n\n";
 
@@ -67,28 +78,50 @@ void defineType(std::ofstream & MyFile, std::string baseName, std::string classN
 void defineVisitor(std::ofstream& MyFile, std::string baseName, std::list<std::string> types) {
 
 	// Define visitor base class
+	MyFile << "template <typename T>\n";
 	MyFile << "class ExprVisitor { \n";
-
-	// In the example this only generates a single 'interface' which will be inherited from in
-	// the defineAstfunction
-
-	// REMEMBER - in C++, interface and abstract types do not exist like in C#
-	// An abstract class is something that can be instatiated and inherited from
-	// An interface would be something that has a pure virtual function in it
-	//		so something that needs to be inherited from and filled out before it
-	//		can be instantiated
 
 	// Create methods to 'visit' all of the generated classes 
 	for (const std::string& type : types) {
 		std::istringstream stream(type);
 		std::string typeName;
 		std::getline(stream, typeName, ' ');
-		MyFile << "	virtual T visit"+ typeName + baseName + "("+ typeName + " ";
-		MyFile << "expression);\n";
+		MyFile << "	virtual T visit"+ typeName + baseName + "("+ typeName + "<T>& ";
+		MyFile << "expression) = 0;\n";
 	}
 
 	MyFile << "};\n\n";
 	
+}
+
+void forwardDeclare(std::ofstream& MyFile, std::string baseName, std::list<std::string> types) {
+
+	// Forward declare type classes
+	for (const std::string& typeName : types) {
+		std::istringstream stream(typeName);
+		std::string type;
+		std::getline(stream, type, ' ');
+
+		MyFile << "template <typename T> class " << type << ";\n";
+	}
+	MyFile << "\n";
+}
+
+void defineBaseExpr(std::ofstream& MyFile) {
+
+	MyFile << "template <typename T>\n";
+	MyFile << "class Expr { \n";
+
+	// All subclassess have different fields, doesnt make sense to declare them in the parent class
+	/*MyFile << "	const Expr<T> left; \n";
+	MyFile << "	const Token operatorToken; \n";
+	MyFile << "	const Expr<T> right; \n";*/
+
+	MyFile << "	virtual ~Expr() = default; \n"; 
+	// This should be a pure virtual function
+	MyFile << "	virtual const T accept(ExprVisitor<T> visitor) const = 0; \n";
+
+	MyFile << "};\n\n";
 }
 
 void defineAst(std::string outputDir, std::string baseName, std::list<std::string> types) {
@@ -105,23 +138,24 @@ void defineAst(std::string outputDir, std::string baseName, std::list<std::strin
 	MyFile << "#define EXPRGEN_H\n";
 
 	// include the header
-	MyFile << "#include \"Expr.h\" \n";
 	MyFile << "#include \"Token.h\" \n";
 	MyFile << "#include <list> \n";
+	MyFile << "#include <string> \n";
+	MyFile << "\n";
 
-	// Add templates for implementation of inheritance and abstraction
+	// TODO
 
-	MyFile << "template <typename T>\n";
+	// VIRTUAL NEEDS TO BE ADDED TO ALL INHERITED VALUES OF SUBCLASSES 
 
-	// Each kind of expression needs to act differently at runtime, but using a 
-	// massive switch statement is bad for performance so we need to use a 
-	// design pattern to handle it, the visitor pattern is suggested.
+	// Forward declare classNames for visitor class
+	forwardDeclare(MyFile, baseName, types); 
 
-	// Adds a functional style paradigm to an object oriented language
-	// using the visitor pattern. Interface which has different functionality 
-	// when called for each type
-
+	// Visitor pattern used to identify type rather than massive switch
+	// statement
 	defineVisitor(MyFile, baseName, types);
+
+	// Base Class for subs to inherit from
+	defineBaseExpr(MyFile);
 
 	// Go through each list item and read className and types into seperate variables
 	// className is added onto the baseName which indicates it was generated code
@@ -155,11 +189,12 @@ int main(int argc, char * argv[]) {
 		return 64;
 	}
 
+	// Subclasses listed here
 	std::list<std::string> astTypes{
-		"Binary : Expr left, Token operatorToken, Expr right",
-		"Grouping : Expr expression",
-		"Literal : strliteral value",
-		"Unary : Token operatorToken, Expr right"
+		"Binary : const Expr<T>& left, const Token& operatorToken, const Expr<T>& right",
+		"Grouping : const Expr<T>& expression",
+		"Literal : const std::string& value",
+		"Unary : const Token& operatorToken, const Expr<T>& right"
 	};
 
 	std::string outputDir = argv[1];
