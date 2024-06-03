@@ -67,7 +67,7 @@ void defineType(std::ofstream & MyFile, std::string baseName, std::string classN
 	}
 	MyFile << "{}\n\n";
 
-	MyFile << "	virtual T accept(ExprVisitor<T> visitor) override {\n";
+	MyFile << "	virtual T accept(ExprVisitor<T>& visitor) override {\n";
 	MyFile << "		return visitor.visit(*this);\n";
 	MyFile << "	};\n";
 

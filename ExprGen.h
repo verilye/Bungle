@@ -31,7 +31,7 @@ class Binary : public Expr<T> {
 	Binary (const Expr<T>& left, const Token& operatorToken, const Expr<T>& right)
 		:left(left),operatorToken(operatorToken),right(right){}
 
-	virtual T accept(ExprVisitor<T> visitor) override {
+	virtual T accept(ExprVisitor<T>& visitor) override {
 		return visitor.visit(*this);
 	};
 };
@@ -42,18 +42,20 @@ class Grouping : public Expr<T> {
 	Grouping (const Expr<T>& expression)
 		:expression(expression){}
 
-	virtual T accept(ExprVisitor<T> visitor) override {
+	virtual T accept(ExprVisitor<T>& visitor) override {
 		return visitor.visit(*this);
 	};
 };
 
 template <typename T>
 class Literal : public Expr<T> {
-	const std::string& value;
+
+public:
+	const std::string value;
 	Literal (const std::string& value)
 		:value(value){}
 
-	virtual T accept(ExprVisitor<T> visitor) override {
+	virtual T accept(ExprVisitor<T>& visitor) override {
 		return visitor.visit(*this);
 	};
 };
@@ -65,7 +67,7 @@ class Unary : public Expr<T> {
 	Unary (const Token& operatorToken, const Expr<T>& right)
 		:operatorToken(operatorToken),right(right){}
 
-	virtual T accept(ExprVisitor<T> visitor) override {
+	virtual T accept(ExprVisitor<T>& visitor) override {
 		return visitor.visit(*this);
 	};
 };
