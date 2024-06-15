@@ -37,6 +37,7 @@ public:
 	}
 
 	// Test method to try out the parenthesize function
+	// Using stack based shit to generate references instead of pointers
 	void TestMethod() {
 		// Create Tokens with automatic storage duration (stack-based)
 		Token minusToken(MINUS, "-", " ", 1);
@@ -55,8 +56,11 @@ public:
 
 private:
 
+	// Using variadic template and a fold expression to take in uncertain amount of arguments
 	template<typename... Exprs>
 	std::string parenthesize(const std::string& name, const Exprs&... exprs) {
+		// C++ resource on fold expressions incase I forget. Variadic templates and fold expressions
+		//https://en.cppreference.com/w/cpp/language/fold 
 		std::ostringstream oss;
 		oss << "(" << name;
 		(oss << ... << (" " + exprs.accept(*this)));
