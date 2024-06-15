@@ -1,6 +1,6 @@
 #include "ExprGen.h"
 #include <string>
-#include <iostream>
+#include <sstream>
 
 // Implement the pure virtual functions defined in the 'Visitor interface' in ExprGen
 
@@ -12,8 +12,8 @@
 class AstVisitor : public ExprVisitor {
 
 public:	
-	void print(Expr& expr) {
-		expr.accept(*this);
+	std::string print(Expr& expr) {
+		return expr.accept(*this);
 	}
 
 	std::string visitBinaryExprGen(const Binary& expression) override {
@@ -22,58 +22,46 @@ public:
 	}
 
 	std::string visitGroupingExprGen(const Grouping& expression) override {
-		return parenthesize("group", expression->expression);
+		return parenthesize("group", expression.expression);
 	}
 
 	std::string visitLiteralExprGen(const Literal& expression) override {
-		if (expression->value == NULL) return "nil";
+		if (expression.value == " ") return "nil";
 		// Convert to string
-		return std::to_string(expression->value);
+		return expression.value;
 	}
 
 	std::string visitUnaryExprGen(const Unary& expression) override {
-		return parenthesize(expression->operatorToken->lexeme,
-			expression->right);
+		return parenthesize(expression.operatorToken.lexeme,
+			expression.right);
+	}
+
+	// Test method to try out the parenthesize function
+	void TestMethod() {
+		// Create Tokens with automatic storage duration (stack-based)
+		Token minusToken(MINUS, "-", " ", 1);
+		Token starToken(STAR, "*", " ", 1);
+
+		// Create Expressions with automatic storage duration (stack-based)
+		Literal literal123("123");
+		Literal literal4567("45.67");
+		Grouping groupingExpr(literal4567);
+		Unary unaryExpr(minusToken, literal123);
+		Binary expression(unaryExpr, starToken, groupingExpr);
+
+		// Use the print method from the ASTVisitor base class
+		std::cout << print(expression);
 	}
 
 private:
 
-	// Test method to try out the parenthesize function
-	void TestMethod() {
-		Expr* expression = new Binary(
-			new Unary(
-				new Token(MINUS, "-", NULL, 1),
-				new Literal((std::string)"123")
-			),
-			new Token(STAR, '*', NULL, 1),
-			new Grouping(
-				new Literal((std::string)"45.67");
-				)
-		);
-
-		// Print out AST example 
-		std::cout << expression;
-	}
- 	
-	template<typename... Expr>
-	std::string parenthesize(std::string name, Expr... exprs) {
-		// Create some example expressions and print them to test the printer
-
-		// Name of the AST
-		std::string buildString = "(" + name;
-
-		// Iterate through the abstract syntax tree, adding things to the string as we go 
-		for (const auto p : {exprs...}) {
-
-			buildString.append(" ");
-			
-			// Parenthesize child expressions and add them inside the parent parentheses
-			p->accept(*this);
-		}
-
-		buildString.append(")");
-
-		return buildString;
+	template<typename... Exprs>
+	std::string parenthesize(const std::string& name, const Exprs&... exprs) {
+		std::ostringstream oss;
+		oss << "(" << name;
+		(oss << ... << (" " + exprs.accept(*this)));
+		oss << ")";
+		return oss.str();
 	}
 
 };

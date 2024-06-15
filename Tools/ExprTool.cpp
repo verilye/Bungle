@@ -122,7 +122,7 @@ void defineAst(std::string outputDir, std::string baseName, std::list<std::strin
 	MyFile << "#define EXPRGEN_H\n";
 
 	// include the header
-	MyFile << "#include \"Token.h\" \n";
+	MyFile << "#include \"token.h\" \n";
 	MyFile << "#include <list> \n";
 	MyFile << "#include <string> \n";
 	MyFile << "\n";
@@ -169,7 +169,7 @@ int main(int argc, char * argv[]) {
 	std::list<std::string> astTypes{
 		"Binary : const Expr& left, const Token& operatorToken, const Expr& right",
 		"Grouping : const Expr& expression",
-		"Literal : const std::string& value",
+		"Literal : const std::string value",
 		"Unary : const Token& operatorToken, const Expr& right"
 	};
 

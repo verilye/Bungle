@@ -7,6 +7,7 @@
 #include <vector>
 #include "scanner.h"
 #include "error.h"
+#include "AstPrinterHelper.cpp"
 
 class Bungle {
 	

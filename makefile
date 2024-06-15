@@ -1,5 +1,5 @@
 CC = clang++
-CFLAGS = -g -Wall
+CFLAGS = -g -Wall -std=c++17
 SRCS = bungle.cpp token.cpp scanner.cpp error.cpp AstPrinterHelper.cpp
 OBJS = $(SRCS:.cpp=.o)
 DEPS = $(SRCS:.cpp=.d)

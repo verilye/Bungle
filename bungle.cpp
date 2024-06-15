@@ -1,9 +1,9 @@
 #include "bungle.h"
 
 int main(int argc, char* argv[]) {
-
-	Bungle* bungle = new Bungle();
 	/*
+	Bungle* bungle = new Bungle();
+	
 	if (argc > 2) {
 		std::cout << "(Usage: bungle [script])\n";
 		return 64;
@@ -21,10 +21,9 @@ int main(int argc, char* argv[]) {
 	}
 	*/
 
-
-
 	// TEST AST PRINTER
-	// 
+	AstVisitor* printer = new AstVisitor();
+	printer->TestMethod();
 
 	return 0;
 }

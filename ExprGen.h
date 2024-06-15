@@ -1,6 +1,6 @@
 #ifndef EXPRGEN_H
 #define EXPRGEN_H
-#include "Token.h" 
+#include "token.h" 
 #include <list> 
 #include <string> 
 
@@ -49,8 +49,8 @@ public:
 
 class Literal : public Expr {
 public:
-	const std::string& value;
-	Literal (const std::string& value)
+	const std::string value;
+	Literal (const std::string value)
 		:value(value){}
 
 	virtual std::string accept(ExprVisitor& visitor) const override {
