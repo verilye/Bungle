@@ -4,71 +4,69 @@
 #include <list> 
 #include <string> 
 
-template <typename T> class Binary;
-template <typename T> class Grouping;
-template <typename T> class Literal;
-template <typename T> class Unary;
+class Binary;
+class Grouping;
+class Literal;
+class Unary;
 
-template <typename T>
 class ExprVisitor { 
-	virtual T visitBinaryExprGen(Binary<T>& expression) = 0;
-	virtual T visitGroupingExprGen(Grouping<T>& expression) = 0;
-	virtual T visitLiteralExprGen(Literal<T>& expression) = 0;
-	virtual T visitUnaryExprGen(Unary<T>& expression) = 0;
+public:
+	virtual std::string visitBinaryExprGen(const Binary& expression) = 0;
+	virtual std::string visitGroupingExprGen(const Grouping& expression) = 0;
+	virtual std::string visitLiteralExprGen(const Literal& expression) = 0;
+	virtual std::string visitUnaryExprGen(const Unary& expression) = 0;
 };
 
-template <typename T>
 class Expr { 
+public:
 	virtual ~Expr() = default; 
-	virtual const T accept(ExprVisitor<T> visitor) const = 0; 
+	virtual std::string accept(ExprVisitor& visitor) const = 0; 
 };
 
-template <typename T>
-class Binary : public Expr<T> {
-	const Expr<T>& left;
+class Binary : public Expr {
+public:
+	const Expr& left;
 	 const Token& operatorToken;
-	 const Expr<T>& right;
-	Binary (const Expr<T>& left, const Token& operatorToken, const Expr<T>& right)
+	 const Expr& right;
+	Binary (const Expr& left, const Token& operatorToken, const Expr& right)
 		:left(left),operatorToken(operatorToken),right(right){}
 
-	virtual T accept(ExprVisitor<T>& visitor) override {
-		return visitor.visit(*this);
+	virtual std::string accept(ExprVisitor& visitor) const override {
+		return visitor.visitBinaryExprGen(*this);
 	};
 };
 
-template <typename T>
-class Grouping : public Expr<T> {
-	const Expr<T>& expression;
-	Grouping (const Expr<T>& expression)
+class Grouping : public Expr {
+public:
+	const Expr& expression;
+	Grouping (const Expr& expression)
 		:expression(expression){}
 
-	virtual T accept(ExprVisitor<T>& visitor) override {
-		return visitor.visit(*this);
+	virtual std::string accept(ExprVisitor& visitor) const override {
+		return visitor.visitGroupingExprGen(*this);
 	};
 };
 
-template <typename T>
-class Literal : public Expr<T> {
-
+class Literal : public Expr {
 public:
-	const std::string value;
+	const std::string& value;
 	Literal (const std::string& value)
 		:value(value){}
 
-	virtual T accept(ExprVisitor<T>& visitor) override {
-		return visitor.visit(*this);
+	virtual std::string accept(ExprVisitor& visitor) const override {
+		return visitor.visitLiteralExprGen(*this);
 	};
 };
 
-template <typename T>
-class Unary : public Expr<T> {
+class Unary : public Expr {
+public:
 	const Token& operatorToken;
-	 const Expr<T>& right;
-	Unary (const Token& operatorToken, const Expr<T>& right)
+	 const Expr& right;
+	Unary (const Token& operatorToken, const Expr& right)
 		:operatorToken(operatorToken),right(right){}
 
-	virtual T accept(ExprVisitor<T>& visitor) override {
-		return visitor.visit(*this);
+	virtual std::string accept(ExprVisitor& visitor) const override {
+		return visitor.visitUnaryExprGen(*this);
 	};
 };
 

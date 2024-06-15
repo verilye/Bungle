@@ -4,32 +4,34 @@
 
 // Implement the pure virtual functions defined in the 'Visitor interface' in ExprGen
 
-template <typename T>
-class AstVisitor : public ExprVisitor<T> {
+// NOTE - reminder that all the generated classes are template classes
+// Bad design? Only really going to find out when working on projects with others
+// For pure functionality and performance so far I reckon whatever works is fine enough
+// I can worry about best practices later
 
-public:
-	// We want to print out the Abstract Syntax Tree
-	// to check for errors and shi
-	std::string print(Expr<T>& expr) {
-		return expr.accept(*this);
+class AstVisitor : public ExprVisitor {
+
+public:	
+	void print(Expr& expr) {
+		expr.accept(*this);
 	}
 
-	T visitBinaryExprGen(Binary<T>& expression) {
-		return parenthesize(expression->operatorToken->lexeme, 
-					expression->left, expression->right);
+	std::string visitBinaryExprGen(const Binary& expression) override {
+		return parenthesize(expression.operatorToken.lexeme, 
+					expression.left, expression.right);
 	}
 
-	T visitGroupingExprGen(Grouping<T>& expression) {
+	std::string visitGroupingExprGen(const Grouping& expression) override {
 		return parenthesize("group", expression->expression);
 	}
 
-	T visitLiteralExprGen(Literal<T>& expression) {
+	std::string visitLiteralExprGen(const Literal& expression) override {
 		if (expression->value == NULL) return "nil";
 		// Convert to string
 		return std::to_string(expression->value);
 	}
 
-	T visitUnaryExprGen(Unary<T>& expression) {
+	std::string visitUnaryExprGen(const Unary& expression) override {
 		return parenthesize(expression->operatorToken->lexeme,
 			expression->right);
 	}
@@ -49,29 +51,24 @@ private:
 				)
 		);
 
-		std::cout << parenthesize(expression);
+		// Print out AST example 
+		std::cout << expression;
 	}
  	
-	std::string parenthesize(std::string name, Expr<T>* exprs[], int exprArrSize) {
-		
-
-		// TODO
-		// REWRITE A BUNCH OF THE INHERTANCE SHIT IN THE EXPRGEN
-		// I DONT THINK THE SUBCLASSES SHOULD BE INHERITING FROM EXPR<T>
-		// WHEN T is SHOWN, it should represent a class of type EXPR, NOT EXPR<T>
-
+	template<typename... Expr>
+	std::string parenthesize(std::string name, Expr... exprs) {
+		// Create some example expressions and print them to test the printer
 
 		// Name of the AST
 		std::string buildString = "(" + name;
-		
-		// Iterate through the abstract syntax tree, adding things to the string as we go 
-		for (unsigned int i = 0; i < exprArrSize; i++) {
 
-			// Throw call to the accept function on the Expression
-			// The expression calls visit on the Visitor interface
-			// Strings are printed out depending on the appropriate Expr type
+		// Iterate through the abstract syntax tree, adding things to the string as we go 
+		for (const auto p : {exprs...}) {
+
 			buildString.append(" ");
-			buildString.append(exprs[i]->accept(this));
+			
+			// Parenthesize child expressions and add them inside the parent parentheses
+			p->accept(*this);
 		}
 
 		buildString.append(")");

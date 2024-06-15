@@ -5,17 +5,15 @@
 #include <sstream>
 #include <vector>
 
-// generating code for all different permutations of the Expr class
-// Because Im generating boilerplate, maybe dont bother seperating shit into 
-// headers? Or only generate headers?
+// Personal NOTE on C++ templates - All of my classes here are template classes
+// this is why we are inheriting from Class<T> instead of just Class
 
 void defineType(std::ofstream & MyFile, std::string baseName, std::string className, std::string fieldList) {
 	
-	
-	MyFile << "template <typename T>\n";
-	MyFile << "class " + className + ": public Expr<T> {\n";
+	MyFile << "class " + className + ": public Expr {\n";
+	MyFile << "public:\n";
 
-	// Parse string through the stream and seperate by delimiter
+	// Parse string through the stream and separate by delimiter
 	std::istringstream stream(fieldList);
 	std::string token;
 	std::vector<std::string> fields;
@@ -25,11 +23,7 @@ void defineType(std::ofstream & MyFile, std::string baseName, std::string classN
 		fields.push_back(token);
 	}
 
-	// NOTE -- Why are we redeclaring fields in a subclass declaration
-	// C++ does not have virtual variables, only functions
-
-	// It seems that variables should be declared in each of the subclasses instead
-	// of the super class, this could be wrong but Im going to go with that for now
+	// NOTE - C++ does not have virtual variables, only functions
 
 	// Declaring fields outside the constructor
 	for (const std::string& token : fields) {
@@ -41,16 +35,10 @@ void defineType(std::ofstream & MyFile, std::string baseName, std::string classN
 
 	// Constructor
 	MyFile << "	" + className + "(" + fieldList + ")\n";
-
-	
-	// iterate through vector and print the fields out so its C++ code. 
-	// using an iterator here to be a fancy lad
 	MyFile << "		:";
 
-	// Put the field names in the constructor after the parameter list
-	// in c++ convention
+	// Put the field names in the constructor after the parameter list in c++ convention
 	// Trim each token so that the variable type is not included in the declaration
-
 	for (const std::string& token : fields) {
 		std::istringstream stream(token);
 		std::string variableName;
@@ -67,8 +55,9 @@ void defineType(std::ofstream & MyFile, std::string baseName, std::string classN
 	}
 	MyFile << "{}\n\n";
 
-	MyFile << "	virtual T accept(ExprVisitor<T>& visitor) override {\n";
-	MyFile << "		return visitor.visit(*this);\n";
+	// Return built string from the ASTPrinterHelper class
+	MyFile << "	virtual std::string accept(ExprVisitor& visitor) const override {\n";
+	MyFile << "		return visitor.visit"+className.substr(0,className.length() - 1) + "ExprGen(*this);\n";
 	MyFile << "	};\n";
 
 	MyFile << "};\n\n";
@@ -78,15 +67,16 @@ void defineType(std::ofstream & MyFile, std::string baseName, std::string classN
 void defineVisitor(std::ofstream& MyFile, std::string baseName, std::list<std::string> types) {
 
 	// Define visitor base class
-	MyFile << "template <typename T>\n";
 	MyFile << "class ExprVisitor { \n";
+	MyFile << "public:\n";
 
 	// Create methods to 'visit' all of the generated classes 
 	for (const std::string& type : types) {
 		std::istringstream stream(type);
 		std::string typeName;
 		std::getline(stream, typeName, ' ');
-		MyFile << "	virtual T visit"+ typeName + baseName + "("+ typeName + "<T>& ";
+
+		MyFile << "	virtual std::string visit"+ typeName + baseName + "(const "+ typeName +"& ";
 		MyFile << "expression) = 0;\n";
 	}
 
@@ -102,24 +92,18 @@ void forwardDeclare(std::ofstream& MyFile, std::string baseName, std::list<std::
 		std::string type;
 		std::getline(stream, type, ' ');
 
-		MyFile << "template <typename T> class " << type << ";\n";
+		MyFile << "class " << type << ";\n";
 	}
 	MyFile << "\n";
 }
 
 void defineBaseExpr(std::ofstream& MyFile) {
 
-	MyFile << "template <typename T>\n";
 	MyFile << "class Expr { \n";
-
-	// All subclassess have different fields, doesnt make sense to declare them in the parent class
-	/*MyFile << "	const Expr<T> left; \n";
-	MyFile << "	const Token operatorToken; \n";
-	MyFile << "	const Expr<T> right; \n";*/
-
+	MyFile << "public:\n";
 	MyFile << "	virtual ~Expr() = default; \n"; 
 	// This should be a pure virtual function
-	MyFile << "	virtual const T accept(ExprVisitor<T> visitor) const = 0; \n";
+	MyFile << "	virtual std::string accept(ExprVisitor& visitor) const = 0; \n";
 
 	MyFile << "};\n\n";
 }
@@ -143,24 +127,16 @@ void defineAst(std::string outputDir, std::string baseName, std::list<std::strin
 	MyFile << "#include <string> \n";
 	MyFile << "\n";
 
-	// TODO
-
-	// VIRTUAL NEEDS TO BE ADDED TO ALL INHERITED VALUES OF SUBCLASSES 
-
 	// Forward declare classNames for visitor class
 	forwardDeclare(MyFile, baseName, types); 
 
-	// Visitor pattern used to identify type rather than massive switch
-	// statement
+	// Visitor pattern used to identify type rather than massive switchstatement
 	defineVisitor(MyFile, baseName, types);
 
-	// Base Class for subs to inherit from
+	// Base Class for Subclasses to inherit from
 	defineBaseExpr(MyFile);
 
 	// Go through each list item and read className and types into seperate variables
-	// className is added onto the baseName which indicates it was generated code
-	// Send fields through to be printed out in the defineTypes function
-
 	for(const std::string &type : types){ 
 
 		std::istringstream stream(type); 
@@ -189,12 +165,12 @@ int main(int argc, char * argv[]) {
 		return 64;
 	}
 
-	// Subclasses listed here
+	// Subclasses listed here in this format TO BE GENERATED 
 	std::list<std::string> astTypes{
-		"Binary : const Expr<T>& left, const Token& operatorToken, const Expr<T>& right",
-		"Grouping : const Expr<T>& expression",
+		"Binary : const Expr& left, const Token& operatorToken, const Expr& right",
+		"Grouping : const Expr& expression",
 		"Literal : const std::string& value",
-		"Unary : const Token& operatorToken, const Expr<T>& right"
+		"Unary : const Token& operatorToken, const Expr& right"
 	};
 
 	std::string outputDir = argv[1];

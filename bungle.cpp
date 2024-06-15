@@ -3,7 +3,7 @@
 int main(int argc, char* argv[]) {
 
 	Bungle* bungle = new Bungle();
-
+	/*
 	if (argc > 2) {
 		std::cout << "(Usage: bungle [script])\n";
 		return 64;
@@ -19,6 +19,12 @@ int main(int argc, char* argv[]) {
 	if (hadError) {
 		return 65;
 	}
+	*/
+
+
+
+	// TEST AST PRINTER
+	// 
 
 	return 0;
 }
