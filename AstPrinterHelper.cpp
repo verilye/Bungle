@@ -3,12 +3,6 @@
 #include <sstream>
 
 // Implement the pure virtual functions defined in the 'Visitor interface' in ExprGen
-
-// NOTE - reminder that all the generated classes are template classes
-// Bad design? Only really going to find out when working on projects with others
-// For pure functionality and performance so far I reckon whatever works is fine enough
-// I can worry about best practices later
-
 class AstVisitor : public ExprVisitor {
 
 public:	

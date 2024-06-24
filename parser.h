@@ -1,7 +1,9 @@
 #ifndef PARSER
 #define PARSER
 
-#include <list>
+#include <iostream>
+#include <string>
+#include <vector>
 #include "token.h"
 #include "ExprGen.h"
 
@@ -20,17 +22,18 @@ class Parser{
 
 public:
 
-    Parser(std::list<Token> tokens)
+    Parser(std::vector<Token> tokens)
         :tokens(tokens){}
 
 private:
 
-    const std::list<Token> tokens;
+    // Where using a vector for easy access to the indicies
+    const std::vector<Token> tokens;
     int current = 0;
     
     Expr & expression();
     Expr & equality();
-    bool match(TokenType... types);
+    template<typename... TokenType> bool match(const TokenType... types);
     bool check(TokenType type);
     Token advance();
     bool isAtEnd();
