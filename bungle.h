@@ -8,6 +8,7 @@
 #include "scanner.h"
 #include "error.h"
 #include "AstPrinterHelper.cpp"
+#include "parser.h"
 
 class Bungle {
 	

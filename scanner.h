@@ -6,7 +6,6 @@
 #include "token.h"
 #include "error.h"
 #include <map>
-#include <bits/stdc++.h>
 
 class Scanner {
 

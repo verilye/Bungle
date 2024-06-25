@@ -3,7 +3,6 @@
 
 #include <string>
 #include <iostream>
-#include "error.h"
 
 // Types of tokens that will be recognised by the interpreter
 enum TokenType {

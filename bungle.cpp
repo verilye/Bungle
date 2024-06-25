@@ -1,7 +1,6 @@
 #include "bungle.h"
 
 int main(int argc, char* argv[]) {
-	/*
 	Bungle* bungle = new Bungle();
 	
 	if (argc > 2) {
@@ -19,11 +18,11 @@ int main(int argc, char* argv[]) {
 	if (hadError) {
 		return 65;
 	}
-	*/
+	
 
 	// TEST AST PRINTER
-	AstVisitor* printer = new AstVisitor();
-	printer->TestMethod();
+	// AstVisitor* printer = new AstVisitor();
+	// printer->TestMethod();
 
 	return 0;
 }
@@ -99,10 +98,19 @@ void Bungle::run(std::string source) {
 	//}
 
 	Scanner* scanner = new Scanner(source);
-	std::vector<Token*> newVec = scanner->scanTokens();
+	std::vector<Token*> tokens = scanner->scanTokens();
 
 	// Print tokens out using Token printer in Token class
-	for (unsigned int i = 0; i <newVec.size(); i++) {
-		newVec[i]->printToken();
-	}
+	// for (unsigned int i = 0; i <newVec.size(); i++) {
+	// 	newVec[i]->printToken();
+	// }
+
+	Parser* parser = new Parser(tokens);
+	Expr * expression = parser.parse();
+
+	// Stop if there was a syntax error
+	if(hadError) return;
+
+	std::cout<<expression;
+
 }

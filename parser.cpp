@@ -1,5 +1,14 @@
 #include "parser.h"
 
+Expr * Parser::parse(){
+    try{
+        return & expression();
+    }catch(Parser::ParseError error){
+        return nullptr;
+    }
+}
+
+
 Expr & Parser::expression(){
     return equality();
 }
@@ -53,7 +62,7 @@ Token Parser::previous(){
     return tokens[current-1];
 };
 
-Expr & comparison(){
+Expr & Parser::comparison(){
     Expr & expr = term();
 
     while(match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)){
@@ -78,7 +87,7 @@ Expr & Parser::term(){
     return expr;
  };
 
-Expr Parser::factor(){
+Expr & Parser::factor(){
     Expr & expr = unary();
 
     while(match(SLASH, STAR)){
@@ -108,7 +117,8 @@ Expr & Parser::primary(){
     if(match(NIL)) return Literal(NULL);
 
     if(match(NUMBER, STRING)){
-        return Literal(previous());
+        //Pass what the token says as the argument
+        return Literal(previous().strliteral);
     }
 
     if(match(LEFT_PAREN)){
@@ -116,4 +126,50 @@ Expr & Parser::primary(){
         consume(RIGHT_PAREN, "Expect ')' after expression." );
         return Grouping(expr);
     }
+
+    throw reportError(peek(), "Expect expression");
 };
+
+
+Token Parser::consume(TokenType type, std::string message){
+    if(check(type)) return advance();
+
+    // We want to throw here because exceptions contain
+    // more details and we want to describe the problem verbosely
+    // if we fail to consume a close parenthesis, throw error
+    throw reportError(peek(), message);
+};
+
+Parser::ParseError Parser::reportError(Token token, std::string message){
+    error(token, message);
+
+    // throw an error, synchronise the parser
+    return ParseError();
+};
+
+void Parser::synchronise(){
+
+    // We want to abandon the current statement boundary and go to the next
+    // Forget all errors after the first inside the bounds and carry on
+    // for brevity and speed
+    advance();
+
+    while(!isAtEnd()){
+        if(previous().type == SEMICOLON) return;
+
+        switch(peek().type){
+            case CLASS:
+            case FUN:
+            case VAR:
+            case FOR:
+            case IF:
+            case WHILE:
+            case PRINT:
+            case RETURN:
+                return;
+        }
+
+        advance();
+    }
+}
+

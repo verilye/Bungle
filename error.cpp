@@ -11,6 +11,16 @@ void report(int line, std::string where, std::string message) {
 	hadError = true;
 }
 
+// Report errors in the written code
 void error(int line, std::string message) {
 	report(line, "", message);
+}
+
+// report error detected from the parser
+void error(Token token, std::string message){
+	if(token.type == EOF){
+		report(token.line, " at end", message);
+	} else{
+		report(token.line, " at '" + token.lexeme + "'", message);
+	}
 }

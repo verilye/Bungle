@@ -6,6 +6,7 @@
 #include <vector>
 #include "token.h"
 #include "ExprGen.h"
+#include "error.h"
 
 // Here we are using recursive descent to build the parser
 // A simpler but still powerful alternative to a LALR parser
@@ -27,26 +28,46 @@ public:
 
 private:
 
+    // Go into panic mode when error is found, go back up the tree and
+    // cut off everything after the error
+
+    // "Sentinel" class to describe Parser errors
+    class ParseError : public std::exception{};
     // Where using a vector for easy access to the indicies
     const std::vector<Token> tokens;
     int current = 0;
-    
-    Expr & expression();
-    Expr & equality();
+
+    Expr * parse();
+
     template<typename... TokenType> bool match(const TokenType... types);
     bool check(TokenType type);
-    Token advance();
     bool isAtEnd();
+    Token advance();
     Token peek();
     Token previous();
-    Expr & comparison();
-    Expr term();
-    Expr factor();
-    Expr unary();
-    Expr primary();
-
     Token consume(TokenType type, std::string message);
+    Expr & expression();
+    Expr & equality();
+    Expr & comparison();
+    Expr & term();
+    Expr & factor();
+    Expr & unary();
+    Expr & primary();
+
+    void synchronise();
+
+    // An error is thrown thus allowing the stack to synchronise
+    ParseError reportError(Token token, std::string message);
+
+    
 
 };
+
+// Detect and report errors
+// Avoid crashing or hanging
+// Fast
+// Rerport as many distinct errors as there are
+// Minimise Cascaded errors
+// We want super fast Error Recovery
 
 #endif
