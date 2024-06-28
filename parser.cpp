@@ -2,25 +2,24 @@
 
 Expr * Parser::parse(){
     try{
-        return & expression();
+        return expression();
     }catch(Parser::ParseError error){
         return nullptr;
     }
 }
 
-
-Expr & Parser::expression(){
+Expr * Parser::expression(){
     return equality();
 }
 
-Expr & Parser::equality(){
+Expr * Parser::equality(){
     // Evaluate equality and  
-    Expr& expr = comparison();
+    Expr * expr = comparison();
     while(match(BANG_EQUAL, BANG_EQUAL)){
         // Operator is a keyword in C++, take care
-        Token operatorSymbol = previous();
-        Expr & right = comparison();
-        Binary expression(expr, operatorSymbol,right);
+        Token * operatorSymbol = previous();
+        Expr * right = comparison();
+        Binary * expression = new Binary(expr, operatorSymbol,right);
         expr = expression;
     }
 
@@ -30,7 +29,7 @@ Expr & Parser::equality(){
 template<typename... TokenType>
 bool Parser::match(const TokenType... types){
     // Check to make sure that the values match
-    for(TokenType type : types){
+    for(const auto type : {types...}){
         if(check(type)){
             advance();
             return true;
@@ -42,96 +41,97 @@ bool Parser::match(const TokenType... types){
 
 bool Parser::check(TokenType type){
     if(isAtEnd()) return false;
-    return peek().type == type;
+    return peek()->type == type;
 };
 
-Token Parser::advance(){
+Token * Parser::advance(){
     if(!isAtEnd()) current++;
     return previous();
 };
 
 bool Parser::isAtEnd(){
-    return peek().type == EOF;
+    return peek()->type == ENDOFILE;
 };
 
-Token Parser::peek(){
+Token * Parser::peek(){
     return tokens[current];
 };
 
-Token Parser::previous(){
+Token * Parser::previous(){
     return tokens[current-1];
 };
 
-Expr & Parser::comparison(){
-    Expr & expr = term();
+Expr * Parser::comparison(){
+    Expr * expr = term();
 
     while(match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)){
-        Token operatorSymbol = previous();
-        Expr & right = term();
-        Binary expression(expr, operatorSymbol, right);
+        Token * operatorSymbol = previous();
+        Expr * right = term();
+        Binary * expression = new Binary(expr, operatorSymbol, right);
         expr = expression;
     }
 
     return expr;
 };
 
-Expr & Parser::term(){
-    Expr & expr = factor();
+Expr * Parser::term(){
+    Expr * expr = factor();
     while(match(MINUS, PLUS)){
-        Token operatorSymbol = previous();
-        Expr & right = factor();
-        Binary expression(expr, operatorSymbol, right);
+        Token * operatorSymbol = previous();
+        Expr * right = factor();
+        Binary * expression = new Binary(expr, operatorSymbol, right);
         expr = expression;
     }
     
     return expr;
  };
 
-Expr & Parser::factor(){
-    Expr & expr = unary();
+Expr * Parser::factor(){
+    Expr * expr = unary();
 
     while(match(SLASH, STAR)){
-        Token operatorSymbol = previous();
-        Expr & right = unary();
-        Binary expression(expr, operatorSymbol, right);
+        Token * operatorSymbol = previous();
+        Expr * right = unary();
+        Binary * expression = new Binary(expr, operatorSymbol, right);
         expr = expression;
     }
 
     return expr;
 };
 
-Expr & Parser::unary(){
+Expr * Parser::unary(){
+
     if(match(BANG, MINUS)){
-        Token operatorSymbol = previous();
-        Expr & right = unary();
-        Unary expression(operatorSymbol, right);
+        Token * operatorSymbol = previous();
+        Expr * right = unary();
+        Unary * expression = new Unary(operatorSymbol, right);
         return expression;
     }
 
     return primary();
 };
 
-Expr & Parser::primary(){
-    if(match(FALSE)) return Literal("false");
-    if(match(TRUE)) return Literal("true");
-    if(match(NIL)) return Literal(NULL);
+Expr * Parser::primary(){
+    if(match(FALSE)) return new Literal("false");
+    if(match(TRUE)) return new Literal("true");
+    if(match(NIL)) return new Literal(NULL);
 
     if(match(NUMBER, STRING)){
         //Pass what the token says as the argument
-        return Literal(previous().strliteral);
+        return new Literal(previous()->strliteral);
     }
 
     if(match(LEFT_PAREN)){
-        Expr & expr = expression();
+        Expr * expr = expression();
         consume(RIGHT_PAREN, "Expect ')' after expression." );
-        return Grouping(expr);
+        return new Grouping(expr);
     }
 
     throw reportError(peek(), "Expect expression");
 };
 
 
-Token Parser::consume(TokenType type, std::string message){
+Token * Parser::consume(TokenType type, std::string message){
     if(check(type)) return advance();
 
     // We want to throw here because exceptions contain
@@ -140,7 +140,7 @@ Token Parser::consume(TokenType type, std::string message){
     throw reportError(peek(), message);
 };
 
-Parser::ParseError Parser::reportError(Token token, std::string message){
+Parser::ParseError Parser::reportError(Token * token, std::string message){
     error(token, message);
 
     // throw an error, synchronise the parser
@@ -155,9 +155,9 @@ void Parser::synchronise(){
     advance();
 
     while(!isAtEnd()){
-        if(previous().type == SEMICOLON) return;
+        if(previous()->type == SEMICOLON) return;
 
-        switch(peek().type){
+        switch(peek()->type){
             case CLASS:
             case FUN:
             case VAR:
@@ -166,6 +166,7 @@ void Parser::synchronise(){
             case WHILE:
             case PRINT:
             case RETURN:
+            default:
                 return;
         }
 

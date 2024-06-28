@@ -57,7 +57,7 @@ void defineType(std::ofstream & MyFile, std::string baseName, std::string classN
 
 	// Return built string from the ASTPrinterHelper class
 	MyFile << "	virtual std::string accept(ExprVisitor& visitor) const override {\n";
-	MyFile << "		return visitor.visit"+className.substr(0,className.length() - 1) + "ExprGen(*this);\n";
+	MyFile << "		return visitor.visit"+className.substr(0,className.length() - 1) + "ExprGen(this);\n";
 	MyFile << "	};\n";
 
 	MyFile << "};\n\n";
@@ -103,7 +103,7 @@ void defineBaseExpr(std::ofstream& MyFile) {
 	MyFile << "public:\n";
 	MyFile << "	virtual ~Expr() = default; \n"; 
 	// This should be a pure virtual function
-	MyFile << "	virtual std::string accept(ExprVisitor& visitor) const = 0; \n";
+	MyFile << "	virtual std::string accept(ExprVisitor* visitor) const = 0; \n";
 
 	MyFile << "};\n\n";
 }
@@ -167,10 +167,10 @@ int main(int argc, char * argv[]) {
 
 	// Subclasses listed here in this format TO BE GENERATED 
 	std::list<std::string> astTypes{
-		"Binary : const Expr& left, const Token& operatorToken, const Expr& right",
-		"Grouping : const Expr& expression",
+		"Binary : const Expr* left, const Token* operatorToken, const Expr* right",
+		"Grouping : const Expr* expression",
 		"Literal : const std::string value",
-		"Unary : const Token& operatorToken, const Expr& right"
+		"Unary : const Token* operatorToken, const Expr* right"
 	};
 
 	std::string outputDir = argv[1];

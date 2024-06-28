@@ -105,12 +105,14 @@ void Bungle::run(std::string source) {
 	// 	newVec[i]->printToken();
 	// }
 
-	Parser* parser = new Parser(tokens);
-	Expr * expression = parser.parse();
+	Parser * parser = new Parser(tokens);
+	// THE PARSER TAKES A VECTOR OF TOKENS PRESENTLY NOT AN ARRAY OF TOKEN POINTERS
+	Expr * expression = parser->parse();
 
 	// Stop if there was a syntax error
 	if(hadError) return;
 
-	std::cout<<expression;
+	AstVisitor * printer = new AstVisitor();
+	std::cout << printer->print(expression);
 
 }

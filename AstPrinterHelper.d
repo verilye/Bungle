@@ -1,1 +1,1 @@
-AstPrinterHelper.o: AstPrinterHelper.cpp ExprGen.h token.h error.h
+AstPrinterHelper.o: AstPrinterHelper.cpp ExprGen.h token.h

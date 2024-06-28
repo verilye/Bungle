@@ -23,8 +23,10 @@ class Parser{
 
 public:
 
-    Parser(std::vector<Token> tokens)
+    Parser(std::vector<Token*> tokens)
         :tokens(tokens){}
+
+    Expr * parse();
 
 private:
 
@@ -34,30 +36,28 @@ private:
     // "Sentinel" class to describe Parser errors
     class ParseError : public std::exception{};
     // Where using a vector for easy access to the indicies
-    const std::vector<Token> tokens;
+    const std::vector<Token*> tokens;
     int current = 0;
-
-    Expr * parse();
 
     template<typename... TokenType> bool match(const TokenType... types);
     bool check(TokenType type);
     bool isAtEnd();
-    Token advance();
-    Token peek();
-    Token previous();
-    Token consume(TokenType type, std::string message);
-    Expr & expression();
-    Expr & equality();
-    Expr & comparison();
-    Expr & term();
-    Expr & factor();
-    Expr & unary();
-    Expr & primary();
+    Token * advance();
+    Token * peek();
+    Token * previous();
+    Token * consume(TokenType type, std::string message);
+    Expr * expression();
+    Expr * equality();
+    Expr * comparison();
+    Expr * term();
+    Expr * factor();
+    Expr * unary();
+    Expr * primary();
 
     void synchronise();
 
     // An error is thrown thus allowing the stack to synchronise
-    ParseError reportError(Token token, std::string message);
+    ParseError reportError(Token * token, std::string message);
 
     
 

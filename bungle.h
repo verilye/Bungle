@@ -15,9 +15,10 @@ class Bungle {
 public:
 	static void runFile(std::string path);
 	static void runPrompt();
+	static void run(std::string source);
 private:
 	
-	static void run(std::string source);
+	
 };
 
 

@@ -11,10 +11,10 @@ class Unary;
 
 class ExprVisitor { 
 public:
-	virtual std::string visitBinaryExprGen(const Binary& expression) = 0;
-	virtual std::string visitGroupingExprGen(const Grouping& expression) = 0;
-	virtual std::string visitLiteralExprGen(const Literal& expression) = 0;
-	virtual std::string visitUnaryExprGen(const Unary& expression) = 0;
+	virtual std::string visitBinaryExprGen(const Binary* expression) = 0;
+	virtual std::string visitGroupingExprGen(const Grouping* expression) = 0;
+	virtual std::string visitLiteralExprGen(const Literal* expression) = 0;
+	virtual std::string visitUnaryExprGen(const Unary* expression) = 0;
 };
 
 class Expr { 
@@ -25,25 +25,25 @@ public:
 
 class Binary : public Expr {
 public:
-	const Expr& left;
-	 const Token& operatorToken;
-	 const Expr& right;
-	Binary (const Expr& left, const Token& operatorToken, const Expr& right)
+	const Expr* left;
+	 const Token* operatorToken;
+	 const Expr* right;
+	Binary (const Expr* left, const Token* operatorToken, const Expr* right)
 		:left(left),operatorToken(operatorToken),right(right){}
 
 	virtual std::string accept(ExprVisitor& visitor) const override {
-		return visitor.visitBinaryExprGen(*this);
+		return visitor.visitBinaryExprGen(this);
 	};
 };
 
 class Grouping : public Expr {
 public:
-	const Expr& expression;
-	Grouping (const Expr& expression)
+	const Expr* expression;
+	Grouping (const Expr* expression)
 		:expression(expression){}
 
 	virtual std::string accept(ExprVisitor& visitor) const override {
-		return visitor.visitGroupingExprGen(*this);
+		return visitor.visitGroupingExprGen(this);
 	};
 };
 
@@ -54,19 +54,19 @@ public:
 		:value(value){}
 
 	virtual std::string accept(ExprVisitor& visitor) const override {
-		return visitor.visitLiteralExprGen(*this);
+		return visitor.visitLiteralExprGen(this);
 	};
 };
 
 class Unary : public Expr {
 public:
-	const Token& operatorToken;
-	 const Expr& right;
-	Unary (const Token& operatorToken, const Expr& right)
+	const Token* operatorToken;
+	 const Expr* right;
+	Unary (const Token* operatorToken, const Expr* right)
 		:operatorToken(operatorToken),right(right){}
 
 	virtual std::string accept(ExprVisitor& visitor) const override {
-		return visitor.visitUnaryExprGen(*this);
+		return visitor.visitUnaryExprGen(this);
 	};
 };
 

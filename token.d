@@ -1,1 +1,1 @@
-token.o: token.cpp token.h error.h
+token.o: token.cpp token.h
