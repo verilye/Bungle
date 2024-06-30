@@ -60,6 +60,14 @@ void defineType(std::ofstream & MyFile, std::string baseName, std::string classN
 	MyFile << "		return visitor.visit"+className.substr(0,className.length() - 1) + "ExprGen(this);\n";
 	MyFile << "	};\n";
 
+	// if(className.substr(0,className.length() - 1) == "Literal"){
+	// 	// Set a variable on Literal that stores datatype
+	// 	MyFile<<"TokenType getType() const {}";
+	// 	MyFile<<"double asNumber() const {}";
+	// 	MyFile<<"std::string asString() const {}";
+	// 	MyFile<<"std::string asIdentifier() const {}";
+	// }
+
 	MyFile << "};\n\n";
 
 }

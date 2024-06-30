@@ -13,7 +13,7 @@ Expr * Parser::expression(){
 }
 
 Expr * Parser::equality(){
-    // Evaluate equality and  
+    // Evaluate equality 
     Expr * expr = comparison();
     while(match(BANG_EQUAL, BANG_EQUAL)){
         // Operator is a keyword in C++, take care
@@ -28,7 +28,7 @@ Expr * Parser::equality(){
 
 template<typename... TokenType>
 bool Parser::match(const TokenType... types){
-    // Check to make sure that the values match
+    // Check if the token matches the types
     for(const auto type : {types...}){
         if(check(type)){
             advance();

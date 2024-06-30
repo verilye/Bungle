@@ -101,12 +101,13 @@ void Bungle::run(std::string source) {
 	std::vector<Token*> tokens = scanner->scanTokens();
 
 	// Print tokens out using Token printer in Token class
-	// for (unsigned int i = 0; i <newVec.size(); i++) {
-	// 	newVec[i]->printToken();
-	// }
-
+	/*
+	for (unsigned int i = 0; i <tokens.size(); i++) {
+		tokens[i]->printToken();
+	}
+	*/
+	
 	Parser * parser = new Parser(tokens);
-	// THE PARSER TAKES A VECTOR OF TOKENS PRESENTLY NOT AN ARRAY OF TOKEN POINTERS
 	Expr * expression = parser->parse();
 
 	// Stop if there was a syntax error
@@ -114,5 +115,6 @@ void Bungle::run(std::string source) {
 
 	AstVisitor * printer = new AstVisitor();
 	std::cout << printer->print(expression);
+	
 
 }
