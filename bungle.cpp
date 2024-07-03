@@ -18,7 +18,10 @@ int main(int argc, char* argv[]) {
 	if (hadError) {
 		return 65;
 	}
-	
+
+	if(hadRuntimeError){
+		return 70;
+	}
 
 	// TEST AST PRINTER
 	// AstVisitor* printer = new AstVisitor();
@@ -63,6 +66,7 @@ void Bungle::runPrompt() {
 		}
 		run(line);
 		hadError = false;
+		hadRuntimeError = false;
 	}
 }
 
@@ -97,6 +101,7 @@ void Bungle::run(std::string source) {
 	//	vec.push_back(source.substr(start,source.back()));
 	//}
 
+	Interpreter * interpreter = new Interpreter();
 	Scanner* scanner = new Scanner(source);
 	std::vector<Token*> tokens = scanner->scanTokens();
 
@@ -113,8 +118,10 @@ void Bungle::run(std::string source) {
 	// Stop if there was a syntax error
 	if(hadError) return;
 
-	AstVisitor * printer = new AstVisitor();
-	std::cout << printer->print(expression);
-	
+	interpreter->interpret(expression);
+
+	//Print the AST
+	//AstVisitor * printer = new AstVisitor();
+	//std::cout << printer->print(expression);
 
 }

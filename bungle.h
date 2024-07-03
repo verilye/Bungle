@@ -9,6 +9,7 @@
 #include "error.h"
 #include "AstPrinterHelper.cpp"
 #include "parser.h"
+#include "interpreter.h"
 
 class Bungle {
 	

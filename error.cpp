@@ -2,6 +2,7 @@
 
 // Initialise with no errors
 bool hadError = false;
+bool hadRuntimeError = false;
 
 void report(int line, std::string where, std::string message) {
 
@@ -23,4 +24,11 @@ void error(Token * token, std::string message){
 	} else{
 		report(token->line, " at '" + token->lexeme + "'", message);
 	}
+}
+
+
+// report error detected from the interpreter most of the time
+void error(RuntimeError error){
+	std::cout<< error.message << "\n[line " << error.token->line + "]";
+	hadRuntimeError = true;
 }

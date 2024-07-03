@@ -1,1 +1,1 @@
-scanner.o: scanner.cpp scanner.h token.h error.h
+scanner.o: scanner.cpp scanner.h token.h error.h RuntimeError.h
