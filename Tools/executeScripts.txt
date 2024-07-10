@@ -1,0 +1,9 @@
+// Create a makefile that executes theses two commands
+// Seperate ExprVisitor out into its own class file
+// Convert all instances of passing by reference to passing by pointer in StmtGen
+// Have a look at the structure of StmtGen - should all statments be Expressions? What is the
+// Difference between and Expr and a Expression
+
+clang++ ExprTool.cpp -o generate_ast
+clang++ StmtTool.cpp -o generate_stmt
+

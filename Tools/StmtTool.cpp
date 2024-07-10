@@ -1,3 +1,4 @@
+    
 #include <iostream>
 #include <list>
 #include <string>
@@ -5,12 +6,9 @@
 #include <sstream>
 #include <vector>
 
-// Personal NOTE on C++ templates - All of my classes here are template classes
-// this is why we are inheriting from Class<T> instead of just Class
-
 void defineType(std::ofstream & MyFile, std::string baseName, std::string className, std::string fieldList) {
 	
-	MyFile << "class " + className + ": public Expr {\n";
+	MyFile << "class " + className + ": public Stmt {\n";
 	MyFile << "public:\n";
 
 	// Parse string through the stream and separate by delimiter
@@ -22,8 +20,6 @@ void defineType(std::ofstream & MyFile, std::string baseName, std::string classN
 	{
 		fields.push_back(token);
 	}
-
-	// NOTE - C++ does not have virtual variables, only functions
 
 	// Declaring fields outside the constructor
 	for (const std::string& token : fields) {
@@ -57,16 +53,8 @@ void defineType(std::ofstream & MyFile, std::string baseName, std::string classN
 
 	// Return built string from the ASTPrinterHelper class
 	MyFile << "	virtual std::string accept(ExprVisitor& visitor) const override {\n";
-	MyFile << "		return visitor.visit"+className.substr(0,className.length() - 1) + "ExprGen(this);\n";
+	MyFile << "		return visitor.visit"+className.substr(0,className.length() - 1) + "StmtGen(this);\n";
 	MyFile << "	};\n";
-
-	// if(className.substr(0,className.length() - 1) == "Literal"){
-	// 	// Set a variable on Literal that stores datatype
-	// 	MyFile<<"TokenType getType() const {}";
-	// 	MyFile<<"double asNumber() const {}";
-	// 	MyFile<<"std::string asString() const {}";
-	// 	MyFile<<"std::string asIdentifier() const {}";
-	// }
 
 	MyFile << "};\n\n";
 
@@ -105,13 +93,13 @@ void forwardDeclare(std::ofstream& MyFile, std::string baseName, std::list<std::
 	MyFile << "\n";
 }
 
-void defineBaseExpr(std::ofstream& MyFile) {
+void defineBaseStmt(std::ofstream& MyFile) {
 
-	MyFile << "class Expr { \n";
+	MyFile << "class Stmt { \n";
 	MyFile << "public:\n";
-	MyFile << "	virtual ~Expr() = default; \n"; 
-	// This should be a pure virtual function
-	MyFile << "	virtual std::string accept(ExprVisitor* visitor) const = 0; \n";
+	MyFile << "	virtual ~Stmt() = default; \n"; 
+	// We should add all the visitor shit to the base Visitor interface in the other code generator
+	MyFile << "	virtual std::string accept(ExprVisitor& visitor) const = 0; \n";
 
 	MyFile << "};\n\n";
 }
@@ -126,23 +114,26 @@ void defineAst(std::string outputDir, std::string baseName, std::list<std::strin
 		return;
 	}
 
-	MyFile << "#ifndef EXPRGEN_H\n";
-	MyFile << "#define EXPRGEN_H\n";
+	MyFile << "#ifndef STMTGEN_H\n";
+	MyFile << "#define STMSGEN_H\n";
 
 	// include the header
 	MyFile << "#include \"token.h\" \n";
 	MyFile << "#include <list> \n";
 	MyFile << "#include <string> \n";
+	MyFile << "#include \"ExprGen.h\" \n";
 	MyFile << "\n";
 
 	// Forward declare classNames for visitor class
 	forwardDeclare(MyFile, baseName, types); 
 
 	// Visitor pattern used to identify type rather than massive switchstatement
+    // NOTE we should be adding all visitors to the same interface
+    // POTENTIALLY refactor to create a visitor interface separate file
 	defineVisitor(MyFile, baseName, types);
 
 	// Base Class for Subclasses to inherit from
-	defineBaseExpr(MyFile);
+	defineBaseStmt(MyFile);
 
 	// Go through each list item and read className and types into seperate variables
 	for(const std::string &type : types){ 
@@ -166,23 +157,20 @@ void defineAst(std::string outputDir, std::string baseName, std::list<std::strin
 
 }
 
+
 int main(int argc, char * argv[]) {
 	
 	if (argc != 2) {
-		std::cout << "Usage: generate_ast <output_directory>";
+		std::cout << "Usage: generate_stmt <output_directory>";
 		return 64;
 	}
-
-	// Subclasses listed here in this format TO BE GENERATED 
-	std::list<std::string> astTypes{
-		"Binary : const Expr* left, const Token* operatorToken, const Expr* right",
-		"Grouping : const Expr* expression",
-		"Literal : const std::string value",
-		"Unary : const Token* operatorToken, const Expr* right"
+    // Generate STMT base class and print and expression subclasses
+	std::list<std::string> stmtTypes{
+		"Expression : const Expr* expression",
+		"Print : const Expr* expression"
 	};
 
-	std::string outputDir = argv[1];
-	defineAst(outputDir, "ExprGen", astTypes);
-
+    std::string outputDir = argv[1];
+	defineAst(outputDir, "StmtGen", stmtTypes);
 
 }

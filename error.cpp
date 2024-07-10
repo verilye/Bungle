@@ -29,6 +29,6 @@ void error(Token * token, std::string message){
 
 // report error detected from the interpreter most of the time
 void error(RuntimeError error){
-	std::cout<< error.message << "\n[line " << error.token->line + "]";
+	std::cout<<"\n"<< error.message << "\n [line " << error.token->line << "]";
 	hadRuntimeError = true;
 }
