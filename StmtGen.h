@@ -14,7 +14,7 @@ public:
 	virtual std::string visitPrintStmtGen(const Print& expression) = 0;
 };
 
-class Stmt { 
+class Stmt{ 
 public:
 	virtual ~Stmt() = default; 
 	virtual std::string accept(ExprVisitor& visitor) const = 0; 

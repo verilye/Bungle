@@ -95,7 +95,7 @@ void forwardDeclare(std::ofstream& MyFile, std::string baseName, std::list<std::
 
 void defineBaseStmt(std::ofstream& MyFile) {
 
-	MyFile << "class Stmt { \n";
+	MyFile << "class Stmt{ \n";
 	MyFile << "public:\n";
 	MyFile << "	virtual ~Stmt() = default; \n"; 
 	// We should add all the visitor shit to the base Visitor interface in the other code generator

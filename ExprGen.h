@@ -11,16 +11,16 @@ class Unary;
 
 class ExprVisitor { 
 public:
-	virtual std::string visitBinaryExprGen(const Binary* expression) = 0;
-	virtual std::string visitGroupingExprGen(const Grouping* expression) = 0;
-	virtual std::string visitLiteralExprGen(const Literal* expression) = 0;
-	virtual std::string visitUnaryExprGen(const Unary* expression) = 0;
+	virtual std::string visitBinaryExprGen(const Binary& expression) = 0;
+	virtual std::string visitGroupingExprGen(const Grouping& expression) = 0;
+	virtual std::string visitLiteralExprGen(const Literal& expression) = 0;
+	virtual std::string visitUnaryExprGen(const Unary& expression) = 0;
 };
 
 class Expr { 
 public:
 	virtual ~Expr() = default; 
-	virtual std::string accept(ExprVisitor& visitor) const = 0; 
+	virtual std::string accept(ExprVisitor* visitor) const = 0; 
 };
 
 class Binary : public Expr {
