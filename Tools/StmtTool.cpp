@@ -52,32 +52,12 @@ void defineType(std::ofstream & MyFile, std::string baseName, std::string classN
 	MyFile << "{}\n\n";
 
 	// Return built string from the ASTPrinterHelper class
-	MyFile << "	virtual std::string accept(ExprVisitor& visitor) const override {\n";
-	MyFile << "		return visitor.visit"+className.substr(0,className.length() - 1) + "StmtGen(this);\n";
+	MyFile << "	virtual std::string accept(ExprVisitor* visitor) const override {\n";
+	MyFile << "		return visitor->visit"+className.substr(0,className.length() - 1) + "StmtGen(this);\n";
 	MyFile << "	};\n";
 
 	MyFile << "};\n\n";
 
-}
-
-void defineVisitor(std::ofstream& MyFile, std::string baseName, std::list<std::string> types) {
-
-	// Define visitor base class
-	MyFile << "class ExprVisitor { \n";
-	MyFile << "public:\n";
-
-	// Create methods to 'visit' all of the generated classes 
-	for (const std::string& type : types) {
-		std::istringstream stream(type);
-		std::string typeName;
-		std::getline(stream, typeName, ' ');
-
-		MyFile << "	virtual std::string visit"+ typeName + baseName + "(const "+ typeName +"& ";
-		MyFile << "expression) = 0;\n";
-	}
-
-	MyFile << "};\n\n";
-	
 }
 
 void forwardDeclare(std::ofstream& MyFile, std::string baseName, std::list<std::string> types) {
@@ -99,7 +79,7 @@ void defineBaseStmt(std::ofstream& MyFile) {
 	MyFile << "public:\n";
 	MyFile << "	virtual ~Stmt() = default; \n"; 
 	// We should add all the visitor shit to the base Visitor interface in the other code generator
-	MyFile << "	virtual std::string accept(ExprVisitor& visitor) const = 0; \n";
+	MyFile << "	virtual std::string accept(ExprVisitor* visitor) const = 0; \n";
 
 	MyFile << "};\n\n";
 }
@@ -121,16 +101,8 @@ void defineAst(std::string outputDir, std::string baseName, std::list<std::strin
 	MyFile << "#include \"token.h\" \n";
 	MyFile << "#include <list> \n";
 	MyFile << "#include <string> \n";
-	MyFile << "#include \"ExprGen.h\" \n";
+	MyFile << "#include \"ExprVisitorGen.h\" \n";
 	MyFile << "\n";
-
-	// Forward declare classNames for visitor class
-	forwardDeclare(MyFile, baseName, types); 
-
-	// Visitor pattern used to identify type rather than massive switchstatement
-    // NOTE we should be adding all visitors to the same interface
-    // POTENTIALLY refactor to create a visitor interface separate file
-	defineVisitor(MyFile, baseName, types);
 
 	// Base Class for Subclasses to inherit from
 	defineBaseStmt(MyFile);

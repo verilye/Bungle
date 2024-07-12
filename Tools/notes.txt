@@ -1,5 +1,3 @@
-// Seperate ExprVisitor out into its own class file
-// Convert all instances of passing by reference to passing by pointer in StmtGen
 // Have a look at the structure of StmtGen - should all statments be Expressions? What is the
 //              difference between and Expr and a Expression
 

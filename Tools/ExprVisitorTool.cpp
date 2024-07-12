@@ -9,7 +9,7 @@
 void defineVisitor(std::ofstream& MyFile, std::string baseName, std::list<std::string> types) {
 	// Create methods to 'visit' all of the generated classes 
 	for (const std::string& type : types) {
-		MyFile << "	virtual std::string visit"+ type + baseName + "(const "+ type +"& ";
+		MyFile << "	virtual std::string visit"+ type + baseName + "(const "+ type +"* ";
 		MyFile << "expression) = 0;\n";
 	}
 	
@@ -22,7 +22,7 @@ int main(int argc, char * argv[]){
 		return 64;
 	}
 
-    std::string path = "../ExprVisitorGen.h";
+    std::string path = (std::string)argv[1] + "/ExprVisitorGen.h";
     std::ofstream MyFile(path);
     if (!MyFile.is_open()) {
 		std::cerr << "Failed to open file" << path << std::endl;
