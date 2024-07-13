@@ -7,7 +7,7 @@ class AstVisitor : public ExprVisitor {
 
 public:	
 	std::string print(Expr* expr) {
-		return expr->accept(*this);
+		return expr->accept(this);
 	}
 
 	std::string visitBinaryExprGen(const Binary* expression) override {

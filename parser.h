@@ -7,6 +7,7 @@
 #include "token.h"
 #include "ExprGen.h"
 #include "error.h"
+#include <memory>
 
 // Here we are using recursive descent to build the parser
 // A simpler but still powerful alternative to a LALR parser
@@ -26,7 +27,7 @@ public:
     Parser(std::vector<Token*> tokens)
         :tokens(tokens){}
 
-    Expr * parse();
+   std::list<std::shared_ptr<Stmt>> Parser::parse();
 
 private:
 
@@ -53,6 +54,11 @@ private:
     Expr * factor();
     Expr * unary();
     Expr * primary();
+
+    std::shared_ptr<Stmt> statement();
+
+    std::shared_ptr<PrintStmt> Parser::printStatement();
+    std::shared_ptr<ExpressionStmt> expressionStatement();
 
     void synchronise();
 

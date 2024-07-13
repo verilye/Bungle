@@ -1,16 +1,36 @@
 #include "parser.h"
 
-Expr * Parser::parse(){
-    try{
-        return expression();
-    }catch(Parser::ParseError error){
-        return nullptr;
-    }
+std::list<std::shared_ptr<Stmt>> Parser::parse(){
+   std::list<std::shared_ptr<Stmt>> statements;
+   while(!isAtEnd){
+        statements.push_back(statement());
+   }
+
+    return statements;
 }
 
 Expr * Parser::expression(){
     return equality();
 }
+
+std::shared_ptr<Stmt> Parser::statement(){
+    if(match(PRINT)) return printStatement();
+
+    return expressionStatement();
+};
+
+std::shared_ptr<PrintStmt> Parser::printStatement(){
+    Expr * value = expression();
+    consume(SEMICOLON, "Expect ';' after value.");
+    return std::shared_ptr<PrintStmt> (new PrintStmt(value));
+};
+
+std::shared_ptr<ExpressionStmt> Parser::expressionStatement(){
+    Expr * expr = expression();
+    consume(SEMICOLON, "Expect ';' after value.");
+    return std::shared_ptr<ExpressionStmt> (new ExpressionStmt(expr));
+
+};
 
 Expr * Parser::equality(){
     // Evaluate equality 

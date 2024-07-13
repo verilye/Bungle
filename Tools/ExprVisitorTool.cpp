@@ -48,8 +48,8 @@ int main(int argc, char * argv[]){
     };
 
     std::list<std::string> stmtTypes{
-        "Expression",
-        "Print"
+        "ExpressionStmt",
+        "PrintStmt"
     };
 
     // Define visitor base class
@@ -59,7 +59,7 @@ int main(int argc, char * argv[]){
     // Generate visitor pattern for all Expr subclasses
 	defineVisitor(MyFile, "ExprGen", exprTypes);
     // Generator visitor pattern for Stmt subclasses
-    defineVisitor(MyFile, "StmtGen", stmtTypes);
+    defineVisitor(MyFile, "Gen", stmtTypes);
 
     MyFile << "};\n\n";
 

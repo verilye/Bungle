@@ -53,7 +53,7 @@ void defineType(std::ofstream & MyFile, std::string baseName, std::string classN
 
 	// Return built string from the ASTPrinterHelper class
 	MyFile << "	virtual std::string accept(ExprVisitor* visitor) const override {\n";
-	MyFile << "		return visitor->visit"+className.substr(0,className.length() - 1) + "StmtGen(this);\n";
+	MyFile << "		return visitor->visit"+className.substr(0,className.length() - 1) + "Gen(this);\n";
 	MyFile << "	};\n";
 
 	MyFile << "};\n\n";
@@ -138,8 +138,8 @@ int main(int argc, char * argv[]) {
 	}
     // Generate STMT base class and print and expression subclasses
 	std::list<std::string> stmtTypes{
-		"Expression : const Expr* expression",
-		"Print : const Expr* expression"
+		"ExpressionStmt : const Expr* expression",
+		"PrintStmt : const Expr* expression"
 	};
 
     std::string outputDir = argv[1];

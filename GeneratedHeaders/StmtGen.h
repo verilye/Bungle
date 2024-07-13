@@ -11,10 +11,10 @@ public:
 	virtual std::string accept(ExprVisitor* visitor) const = 0; 
 };
 
-class Expression : public Stmt {
+class ExpressionStmt : public Stmt {
 public:
 	const Expr* expression;
-	Expression (const Expr* expression)
+	ExpressionStmt (const Expr* expression)
 		:expression(expression){}
 
 	virtual std::string accept(ExprVisitor* visitor) const override {
@@ -22,10 +22,10 @@ public:
 	};
 };
 
-class Print : public Stmt {
+class PrintStmt : public Stmt {
 public:
 	const Expr* expression;
-	Print (const Expr* expression)
+	PrintStmt (const Expr* expression)
 		:expression(expression){}
 
 	virtual std::string accept(ExprVisitor* visitor) const override {

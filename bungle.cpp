@@ -113,12 +113,12 @@ void Bungle::run(std::string source) {
 	*/
 	
 	Parser * parser = new Parser(tokens);
-	Expr * expression = parser->parse();
+	std::list<std::shared_ptr<Stmt>> statements = parser->parse();
 
 	// Stop if there was a syntax error
 	if(hadError) return;
 
-	interpreter->interpret(expression);
+	interpreter->interpret(statements);
 
 	//Print the AST
 	//AstVisitor * printer = new AstVisitor();

@@ -10,8 +10,10 @@
 class Interpreter : public ExprVisitor{
 
 public:
+
     Interpreter(){}
-    void interpret(Expr* expression);
+    void interpret(std::list<std::shared_ptr<Stmt>> statements);
+    
     // return a generic datatype but also the raw value for same behavior as Java
     std::string visitLiteralExprGen(const Literal* expr) override {
         // In my current implementation, strings and numbers are identified in the scanner
@@ -21,12 +23,12 @@ public:
     std::string visitGroupingExprGen(const Grouping* expr) override{
         // a grouping node contains a reference to an inner node
         // To evaluate grouping expression, recursively evaluate sub expression and return it
-        return evaulate(expr->expression);
+        return evaluate(expr->expression);
     };
 
     std::string visitUnaryExprGen(const Unary* expr) override{
         // evaluate the value that the unary operator applies to 
-        std::string right = evaulate(expr->right);
+        std::string right = evaluate(expr->right);
 
         switch(expr->operatorToken->type){
             case BANG:
@@ -45,8 +47,8 @@ public:
     };
 
     std::string visitBinaryExprGen(const Binary * expr) override{
-        std::string left = evaulate(expr->left);
-        std::string right = evaulate(expr->right);
+        std::string left = evaluate(expr->left);
+        std::string right = evaluate(expr->right);
 
         switch(expr->operatorToken->type){
             case MINUS:
@@ -95,9 +97,13 @@ public:
         
     };
 
+    virtual std::string visitExpressionStmtGen(const ExpressionStmt* stmt) override;
+    virtual std::string visitPrintStmtGen(const PrintStmt* stmt) override;
+
 private:
-    std::string evaulate(const Expr* expr);
-    std::string stringify();
+    std::string evaluate(const Expr* expr);
+    void execute(std::shared_ptr<Stmt> stmt);
+    std::string stringify(std::string output);
     bool isTruthy(std::string object);
     bool checkIfNum(std::string num);
     bool isEqual(std::string a, std::string b);

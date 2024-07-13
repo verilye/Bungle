@@ -12,8 +12,8 @@ public:
 	virtual std::string visitGroupingExprGen(const Grouping* expression) = 0;
 	virtual std::string visitLiteralExprGen(const Literal* expression) = 0;
 	virtual std::string visitUnaryExprGen(const Unary* expression) = 0;
-	virtual std::string visitExpressionStmtGen(const Expression* expression) = 0;
-	virtual std::string visitPrintStmtGen(const Print* expression) = 0;
+	virtual std::string visitExpressionStmtGen(const ExpressionStmt* expression) = 0;
+	virtual std::string visitPrintStmtGen(const PrintStmt* expression) = 0;
 };
 
 #endif
