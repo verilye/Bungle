@@ -1,10 +1,15 @@
 #ifndef EXPRVISITORGEN_H
 #define EXPRVISITORGEN_H
-#include "token.h" 
+#include "../token.h" 
 #include <list> 
-#include <string> 
-#include "ExprGen.h" 
-#include "StmtGen.h" 
+#include <string>
+
+class Binary;
+class Grouping;
+class Literal;
+class Unary;
+class ExpressionStmt;
+class PrintStmt;
 
 class ExprVisitor { 
 public:

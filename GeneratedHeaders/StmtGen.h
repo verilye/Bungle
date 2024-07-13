@@ -1,9 +1,9 @@
 #ifndef STMTGEN_H
-#define STMSGEN_H
-#include "token.h" 
+#define STMTGEN_H
+#include "../token.h" 
 #include <list> 
 #include <string> 
-#include "ExprVisitorGen.h" 
+#include "ExprGen.h"
 
 class Stmt{ 
 public:

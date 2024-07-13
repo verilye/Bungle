@@ -1,4 +1,4 @@
-#include "ExprGen.h"
+#include "genHeaders.h"
 #include <string>
 #include <sstream>
 
@@ -10,22 +10,22 @@ public:
 		return expr->accept(this);
 	}
 
-	std::string visitBinaryExprGen(const Binary* expression) override {
+	virtual std::string visitBinaryExprGen(const Binary* expression) override {
 		return parenthesize(expression->operatorToken->lexeme, 
 					expression->left, expression->right);
 	}
 
-	std::string visitGroupingExprGen(const Grouping* expression) override {
+	virtual std::string visitGroupingExprGen(const Grouping* expression) override {
 		return parenthesize("group", expression->expression);
 	}
 
-	std::string visitLiteralExprGen(const Literal* expression) override {
+	virtual std::string visitLiteralExprGen(const Literal* expression) override {
 		if (expression->value == " ") return "nil";
 		// Convert to string
 		return expression->value;
 	}
 
-	std::string visitUnaryExprGen(const Unary* expression) override {
+	virtual std::string visitUnaryExprGen(const Unary* expression) override {
 		return parenthesize(expression->operatorToken->lexeme,
 			expression->right);
 	}
@@ -57,7 +57,7 @@ private:
 		//https://en.cppreference.com/w/cpp/language/fold 
 		std::ostringstream oss;
 		oss << "(" << name;
-		(oss << ... << (" " + exprs->accept(*this)));
+		(oss << ... << (" " + exprs->accept(this)));
 		oss << ")";
 		return oss.str();
 	}

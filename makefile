@@ -1,6 +1,6 @@
 CC = clang++
 CFLAGS = -g -Wall -std=c++17
-SRCS = bungle.cpp token.cpp scanner.cpp error.cpp AstPrinterHelper.cpp parser.cpp interpreter.cpp 
+SRCS = bungle.cpp token.cpp scanner.cpp error.cpp parser.cpp interpreter.cpp 
 OBJS = $(SRCS:.cpp=.o)
 DEPS = $(SRCS:.cpp=.d)
 TARGET = bungle

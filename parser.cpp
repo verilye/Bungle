@@ -2,7 +2,7 @@
 
 std::list<std::shared_ptr<Stmt>> Parser::parse(){
    std::list<std::shared_ptr<Stmt>> statements;
-   while(!isAtEnd){
+   while(!isAtEnd()){
         statements.push_back(statement());
    }
 

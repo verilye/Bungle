@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include "token.h"
-#include "ExprGen.h"
+#include "genHeaders.h"
 #include "error.h"
 #include <memory>
 
@@ -27,7 +27,7 @@ public:
     Parser(std::vector<Token*> tokens)
         :tokens(tokens){}
 
-   std::list<std::shared_ptr<Stmt>> Parser::parse();
+   std::list<std::shared_ptr<Stmt>> parse();
 
 private:
 
@@ -57,7 +57,7 @@ private:
 
     std::shared_ptr<Stmt> statement();
 
-    std::shared_ptr<PrintStmt> Parser::printStatement();
+    std::shared_ptr<PrintStmt> printStatement();
     std::shared_ptr<ExpressionStmt> expressionStatement();
 
     void synchronise();

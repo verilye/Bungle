@@ -33,7 +33,7 @@ int main(int argc, char * argv[]){
 	MyFile << "#define EXPRVISITORGEN_H\n";
 
 	// include the header
-	MyFile << "#include \"token.h\" \n";
+	MyFile << "#include \"../token.h\" \n";
 	MyFile << "#include <list> \n";
 	MyFile << "#include <string> \n";
 	MyFile << "#include \"ExprGen.h\" \n";

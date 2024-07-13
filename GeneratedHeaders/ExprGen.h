@@ -1,9 +1,9 @@
 #ifndef EXPRGEN_H
 #define EXPRGEN_H
-#include "token.h" 
+#include "../token.h" 
 #include <list> 
 #include <string> 
-#include "ExprVisitorGen.h" 
+#include "ExprVisitorGen.h"
 
 class Expr { 
 public:

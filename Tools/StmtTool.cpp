@@ -98,7 +98,7 @@ void defineAst(std::string outputDir, std::string baseName, std::list<std::strin
 	MyFile << "#define STMSGEN_H\n";
 
 	// include the header
-	MyFile << "#include \"token.h\" \n";
+	MyFile << "#include \"../token.h\" \n";
 	MyFile << "#include <list> \n";
 	MyFile << "#include <string> \n";
 	MyFile << "#include \"ExprVisitorGen.h\" \n";

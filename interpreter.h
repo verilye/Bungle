@@ -2,10 +2,11 @@
 #define INTERPRETER
 
 #include <string>
-#include "ExprGen.h"
+#include "genHeaders.h"
 #include "RuntimeError.h"
 #include <iostream>
 #include "error.h"
+#include <memory>
 
 class Interpreter : public ExprVisitor{
 
@@ -14,91 +15,12 @@ public:
     Interpreter(){}
     void interpret(std::list<std::shared_ptr<Stmt>> statements);
     
-    // return a generic datatype but also the raw value for same behavior as Java
-    std::string visitLiteralExprGen(const Literal* expr) override {
-        // In my current implementation, strings and numbers are identified in the scanner
-        return expr->value;
-    }
-
-    std::string visitGroupingExprGen(const Grouping* expr) override{
-        // a grouping node contains a reference to an inner node
-        // To evaluate grouping expression, recursively evaluate sub expression and return it
-        return evaluate(expr->expression);
-    };
-
-    std::string visitUnaryExprGen(const Unary* expr) override{
-        // evaluate the value that the unary operator applies to 
-        std::string right = evaluate(expr->right);
-
-        switch(expr->operatorToken->type){
-            case BANG:
-                // returns opposite of truthiness of value like in most languages
-                return  std::to_string(!isTruthy(right));
-            case MINUS:
-                checkNumberOperand(expr->operatorToken, right);
-                //if negative, cast as double and return the negative version of the number
-                return  std::to_string(std::stof(right)*-1);
-            default:
-                std::cout<<"CASE NOT IMPLEMENTED - visitUnaryExprGen\n";
-        }
-
-        //Unreachable.
-        return NULL;
-    };
-
-    std::string visitBinaryExprGen(const Binary * expr) override{
-        std::string left = evaluate(expr->left);
-        std::string right = evaluate(expr->right);
-
-        switch(expr->operatorToken->type){
-            case MINUS:
-                checkNumberOperands(expr->operatorToken, left, right);
-                return std::to_string(std::stof(left) - std::stof(right));
-            case SLASH:
-                checkNumberOperands(expr->operatorToken, left, right);
-                return  std::to_string(std::stof(left) / std::stof(right));
-            case STAR:
-                checkNumberOperands(expr->operatorToken, left, right);
-                return  std::to_string(std::stof(left) * std::stof(right));
-            case PLUS:  
-                // Can be used to concatenate two strings OR add 2 numbers
-                if(checkIfNum(left) && checkIfNum(right)){
-                    return std::to_string(std::stof(left) + std::stof(right));
-                }
-
-                // REMEMBER typeid FOR LATER, SHOULD HAVE BEEN USING IT THE WHOLE TIME
-                if(typeid(left) == typeid(std::string) && typeid(right) == typeid(std::string)){
-                    return left + right;
-                }
-
-                throw new RuntimeError(expr->operatorToken, "Operands must be two numbers or two strings");
-            case GREATER:
-                checkNumberOperands(expr->operatorToken, left, right);
-                return std::to_string(std::stof(left) > std::stof(right));
-            case GREATER_EQUAL:
-                checkNumberOperands(expr->operatorToken, left, right);
-                return std::to_string(std::stof(left) >= std::stof(right));
-            case LESS:
-                checkNumberOperands(expr->operatorToken, left, right);
-                return std::to_string(std::stof(left) < std::stof(right));
-            case LESS_EQUAL:
-                checkNumberOperands(expr->operatorToken, left, right);
-                return std::to_string(std::stof(left) <= std::stof(right));
-            case BANG_EQUAL: 
-                return std::to_string(!isEqual(left, right));
-            case EQUAL_EQUAL: 
-                return std::to_string(isEqual(left, right));
-            default:
-                std::cout<<"CASE NOT IMPLEMENTED - visitBinaryExprGen\n";
-        }       
-
-        // Unreachable
-        return NULL;
-        
-    };
-
-    virtual std::string visitExpressionStmtGen(const ExpressionStmt* stmt) override;
-    virtual std::string visitPrintStmtGen(const PrintStmt* stmt) override;
+    virtual std::string visitBinaryExprGen(const Binary * expression) override;
+    virtual std::string visitGroupingExprGen(const Grouping* expression) override;
+    virtual std::string visitLiteralExprGen(const Literal* expression) override;
+    virtual std::string visitUnaryExprGen(const Unary* expression) override;
+    virtual std::string visitExpressionStmtGen(const ExpressionStmt* expression) override;
+    virtual std::string visitPrintStmtGen(const PrintStmt* expression) override;
 
 private:
     std::string evaluate(const Expr* expr);
