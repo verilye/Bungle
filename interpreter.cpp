@@ -24,10 +24,11 @@ std::string Interpreter::visitBinaryExprGen(const Binary * expr){
         case STAR:
             checkNumberOperands(expr->operatorToken, left, right);
             return  std::to_string(std::stof(left) * std::stof(right));
-        case PLUS:  
+        case PLUS: 
             // Can be used to concatenate two strings OR add 2 numbers
             if(checkIfNum(left) && checkIfNum(right)){
-                return std::to_string(std::stof(left) + std::stof(right));
+                float addition = (std::stof(left) + std::stof(right));
+                return std::to_string(addition);
             }
 
             // REMEMBER typeid FOR LATER, SHOULD HAVE BEEN USING IT THE WHOLE TIME
@@ -130,8 +131,12 @@ bool Interpreter::isTruthy(std::string object){
 
 bool Interpreter::checkIfNum(std::string num){
 
+    bool decimalFound = false;
     for(int c = 0; c<num.size();c++){
-        if(c >= '0' && c <= '9'){
+        if(num[c] >= '0' && num[c] <= '9'){
+            continue;
+        }else if(num[c] == '.' && decimalFound == false){
+            decimalFound = true;
             continue;
         }else{
             return false;

@@ -72,12 +72,6 @@ void Bungle::runPrompt() {
 
 void Bungle::run(std::string source) {
 
-	// Break string into tokens and print them out on new lines every time
-	// Create a java-list like structure and store the string in it using spaces as the delimiter ()
-	// Im going to use a vector here, a cursory look online makes it seem like vectors are better for traversing
-	// and linked lists are better for insertion only
-
-
 	// TEST CODE TO VISUALISE TOKENS
 	//std::vector<std::string> vec;
 	//if (!source.empty()) {
@@ -121,7 +115,7 @@ void Bungle::run(std::string source) {
 	interpreter->interpret(statements);
 
 	//Print the AST
-	//AstVisitor * printer = new AstVisitor();
-	//std::cout << printer->print(expression);
+	// AstVisitor * printer = new AstVisitor();
+	// std::cout << printer->print(expression);
 
 }

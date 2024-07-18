@@ -24,7 +24,8 @@ private:
 	int current = 0;
 	// Tracks line that the lexeme is on so we can track its location (for errors etc)
 	int line = 1;
-	
+
+	int counter = 0;
 	
 	bool isAtEnd();
 	char peek();

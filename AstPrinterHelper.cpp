@@ -30,6 +30,11 @@ public:
 			expression->right);
 	}
 
+	// virtual std::string visitExpressionStmtGen(const Stmt* expression) override{
+	// 	return parenthesize(expression->operatorToken->lexeme,
+	// 		expression->right);
+	// }
+
 	// Test method to try out the parenthesize function
 	// Using stack based shit to generate references instead of pointers
 	void TestMethod() {

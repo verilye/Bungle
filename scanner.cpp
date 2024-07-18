@@ -1,21 +1,25 @@
 #include "scanner.h"
 
+// Consume current value and step forward one
 char Scanner::advance() {
 	current++;
-	return source[current - 1];
+	return source[current-1];
 }
 
 void Scanner::addToken(TokenType type) {
-	addToken(type, "");
+	addToken(type, " ");
 }
 
 void Scanner::addToken(TokenType type, std::string strliteral) {
 	std::string text = source.substr(start,(current-start));
 	Token * token = new Token(type, text, strliteral, line);
 	tokens.push_back(token);
+	counter++;
 }
 
+// Decide the type of the value in the scanner and handle it
 void Scanner::scanToken() {
+	// This is currently the only area where I'm returning a value from advance
 	char c = advance();
 	switch (c) {
 		case '(': addToken(LEFT_PAREN); break;
@@ -48,17 +52,18 @@ void Scanner::scanToken() {
 			}
 			break;
 		case ' ':
+			break;
 		case '\r':
+			break;
 		case '\t':
 			//Ignore whitespace
+			break;
 		case '\n':
 			line++;
 			break;
 		case '"': string(); break;
-
 			// Conside the concept of maximal munch
-			// The case which matches the most characters wins
-			// when 2 lexical grammar rules match a chunk
+			// The case which matches the most characters wins when 2 lexical grammar rules match a chunk
 		case 'o':
 			if (peek() == 'r') {
 				addToken(OR);
@@ -79,23 +84,24 @@ void Scanner::scanToken() {
 			}
 			break;
 	}
+
 }
 
 void Scanner::string() {
 	while (peek() != '"' && !isAtEnd()) {
-		if (peek() == '\n') line++;
+		if (peek() == '\n') {
+			line++;
+		}
 		advance();
 	}
-
 	if (isAtEnd()) {
 		error(line, "Unterminated string.");
 		return;
 	}
+	std::string value = source.substr(start+1, ((current - start)-1));
 
 	// The closing "
 	advance();
-
-	std::string value = source.substr(start+1, ((current - start)-1));
 	addToken(STRING, value);
 }
 
@@ -103,22 +109,20 @@ bool Scanner::isAtEnd() {
 	return current >= source.size();
 }
 
-// lookahead function. Check the character ahead of it without 'consuming' it
-// important concept within interpreters
+// Checks the current char loaded in the scanner
 char Scanner::peek() {
 	if (isAtEnd()) return '\0';
 	return source[current];
 }
 
 std::vector<Token*> Scanner::scanTokens() {
-
 	while (!isAtEnd()) {
 
 		start = current;
 		scanToken();
-
 	}
-	tokens.push_back((new Token(ENDOFILE, "", "", line)));
+	Token* ptr = new Token(ENDOFILE," "," ", line);
+	tokens.push_back(ptr);
 	return tokens;
 
 }
@@ -140,6 +144,9 @@ void Scanner::number() {
 
 	// Double.parseDouble() Java method in the example
 	addToken(NUMBER, (source.substr(start, (current - start))));
+
+	// A number needs to be followed by a mathematical operator, a space or semicolon
+
 }
 
 
