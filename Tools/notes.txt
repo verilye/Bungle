@@ -1,4 +1,5 @@
 // Fixes needed
+// Fix up usage of pointers and properly clean shit up where Ive made a mess
 
 clang++ ExprTool.cpp -o generate_ast
 clang++ StmtTool.cpp -o generate_stmt
