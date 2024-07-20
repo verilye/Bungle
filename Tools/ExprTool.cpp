@@ -153,7 +153,8 @@ int main(int argc, char * argv[]) {
 		"Binary : const Expr* left, const Token* operatorToken, const Expr* right",
 		"Grouping : const Expr* expression",
 		"Literal : const std::string value",
-		"Unary : const Token* operatorToken, const Expr* right"
+		"Unary : const Token* operatorToken, const Expr* right",
+		"Variable : const Token* name",
 	};
 
 	std::string outputDir = argv[1];

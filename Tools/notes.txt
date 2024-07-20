@@ -1,5 +1,4 @@
 // Fixes needed
-// Numbers need to be scanned properly in the scanner with a proper rule
 
 clang++ ExprTool.cpp -o generate_ast
 clang++ StmtTool.cpp -o generate_stmt

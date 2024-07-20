@@ -139,7 +139,8 @@ int main(int argc, char * argv[]) {
     // Generate STMT base class and print and expression subclasses
 	std::list<std::string> stmtTypes{
 		"ExpressionStmt : const Expr* expression",
-		"PrintStmt : const Expr* expression"
+		"PrintStmt : const Expr* expression",
+		"VarStmt : const Token * name, const Expr* initialiser"
 	};
 
     std::string outputDir = argv[1];

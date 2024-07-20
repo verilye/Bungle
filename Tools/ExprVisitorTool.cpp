@@ -44,12 +44,14 @@ int main(int argc, char * argv[]){
         "Binary",
         "Grouping", 
         "Literal",
-        "Unary"
+        "Unary",
+        "Variable",
     };
 
     std::list<std::string> stmtTypes{
         "ExpressionStmt",
-        "PrintStmt"
+        "PrintStmt",
+        "VarStmt"
     };
 
     // Define visitor base class
