@@ -36,9 +36,15 @@ int main(int argc, char * argv[]){
 	MyFile << "#include \"../token.h\" \n";
 	MyFile << "#include <list> \n";
 	MyFile << "#include <string> \n";
-	MyFile << "#include \"ExprGen.h\" \n";
-    MyFile << "#include \"StmtGen.h\" \n";
 	MyFile << "\n";
+    MyFile <<"class Binary;\n";
+    MyFile <<"class Grouping;\n";
+    MyFile <<"class Literal;\n";
+    MyFile <<"class Unary;\n";
+    MyFile <<"class ExpressionStmt;\n";
+    MyFile <<"class PrintStmt;\n";
+    MyFile <<"class VarStmt;\n";
+    MyFile <<"class Variable;\n";
 
     std::list<std::string> exprTypes{
         "Binary",

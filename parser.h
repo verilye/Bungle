@@ -59,6 +59,8 @@ private:
 
     std::shared_ptr<PrintStmt> printStatement();
     std::shared_ptr<ExpressionStmt> expressionStatement();
+    std::shared_ptr<Stmt> declaration();
+    std::shared_ptr<VarStmt> varDeclaration();
 
     void synchronise();
 

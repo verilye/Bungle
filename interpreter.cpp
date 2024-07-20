@@ -95,14 +95,14 @@ std::string Interpreter::visitUnaryExprGen(const Unary* expr){
 };
 
 std::string Interpreter::visitExpressionStmtGen(const ExpressionStmt* stmt){
-    return evaluate(stmt->expression);;
+    evaluate(stmt->expression);;
+    return "";
 };
 
 std::string Interpreter::visitPrintStmtGen(const PrintStmt* stmt){
     std::string value = evaluate(stmt->expression);
     std::cout<< stringify(value) <<std::endl;
-    return value;
-
+    return "";
 };
 
 std::string Interpreter::evaluate(const Expr* expr){

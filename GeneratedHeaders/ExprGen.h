@@ -3,7 +3,7 @@
 #include "../token.h" 
 #include <list> 
 #include <string> 
-#include "ExprVisitorGen.h"
+#include "ExprVisitorGen.h" 
 
 class Expr { 
 public:
@@ -55,6 +55,17 @@ public:
 
 	virtual std::string accept(ExprVisitor* visitor) const override {
 		return visitor->visitUnaryExprGen(this);
+	};
+};
+
+class Variable : public Expr {
+public:
+	const Token* name;
+	Variable (const Token* name)
+		:name(name){}
+
+	virtual std::string accept(ExprVisitor* visitor) const override {
+		return visitor->visitVariableExprGen(this);
 	};
 };
 

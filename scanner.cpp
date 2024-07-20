@@ -149,7 +149,6 @@ void Scanner::number() {
 
 }
 
-
 // Convert chars to the proper datatype
 char Scanner::peekNext() {
 	if (current + 1 >= source.length()) return '\0';

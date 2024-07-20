@@ -1,9 +1,11 @@
 #include "parser.h"
 
+
+// Step through variable declarations as the base for now
 std::list<std::shared_ptr<Stmt>> Parser::parse(){
    std::list<std::shared_ptr<Stmt>> statements;
    while(!isAtEnd()){
-        statements.push_back(statement());
+        statements.push_back(declaration());
    }
 
     return statements;
@@ -141,6 +143,10 @@ Expr * Parser::primary(){
         return new Literal(previous()->strliteral);
     }
 
+    if(match(IDENTIFIER)){
+        return new Variable(previous());
+    }
+
     if(match(LEFT_PAREN)){
         Expr * expr = expression();
         consume(RIGHT_PAREN, "Expect ')' after expression." );
@@ -193,4 +199,40 @@ void Parser::synchronise(){
         advance();
     }
 }
+
+
+// Synchronise after an error is found for better error reporting
+std::shared_ptr<Stmt> Parser::declaration(){
+    try{
+        if(match(VAR)) return std::shared_ptr(varDeclaration());
+
+        return statement();
+    }catch(ParseError error){
+        synchronise();
+        return NULL;
+    }
+};
+
+
+// Experimenting and learning a lot with smart pointers here
+// They are kinda pain in the ass/ kinda useful
+std::shared_ptr<VarStmt> Parser::varDeclaration(){
+
+    std::unique_ptr<Token> name (consume(IDENTIFIER, "Expect variable name."));
+    std::unique_ptr<Expr> initializer = NULL;
+    if(match(EQUAL)){
+        initializer = std::unique_ptr<Expr>(expression());
+    }
+
+    consume(SEMICOLON, "Expect ';' after variable declaration");
+    const Token* bame = name.get();
+    const Expr * binitializer = initializer.get();
+    VarStmt * identity = new VarStmt(bame, binitializer);
+
+    delete bame;
+    delete binitializer;
+    return std::shared_ptr<VarStmt>(identity);
+};
+
+
 

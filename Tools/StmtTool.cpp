@@ -95,13 +95,13 @@ void defineAst(std::string outputDir, std::string baseName, std::list<std::strin
 	}
 
 	MyFile << "#ifndef STMTGEN_H\n";
-	MyFile << "#define STMSGEN_H\n";
+	MyFile << "#define STMTGEN_H\n";
 
 	// include the header
 	MyFile << "#include \"../token.h\" \n";
 	MyFile << "#include <list> \n";
 	MyFile << "#include <string> \n";
-	MyFile << "#include \"ExprVisitorGen.h\" \n";
+	MyFile << "#include \"ExprGen.h\" \n";
 	MyFile << "\n";
 
 	// Base Class for Subclasses to inherit from

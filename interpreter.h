@@ -21,6 +21,8 @@ public:
     virtual std::string visitUnaryExprGen(const Unary* expression) override;
     virtual std::string visitExpressionStmtGen(const ExpressionStmt* expression) override;
     virtual std::string visitPrintStmtGen(const PrintStmt* expression) override;
+    virtual std::string visitVariableExprGen(const Variable* expression) override;
+    virtual std::string visitVarStmtGen(const VarStmt* expression) override; 
 
 private:
     std::string evaluate(const Expr* expr);
